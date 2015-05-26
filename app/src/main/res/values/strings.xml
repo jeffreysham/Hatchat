@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Hatchat</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="write">Write...</string>
+    <string name="chats">Chats</string>
+    <string name="friends">Friends</string>
+    <string name="send">Send</string>
+    <string name="hint">Write a message...</string>
+    <string name="welcome">Welcome to Hatchat!\nTo start, please press\nthe button below.</string>
+    <string name="add_friends">Please select at least 15 friends to add to your Hat!</string>
+    <string name="friends_limit">/15 All contacts</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="title_activity_home_screen">HomeScreenActivity</string>
+    <string name="title_activity_write_new_message">WriteNewMessageActivity</string>
+    <string name="title_activity_chats">ChatsActivity</string>
+    <string name="title_activity_friends">FriendsActivity</string>
+    <string name="title_activity_add_friends">AddFriendsActivity</string>
+</resources>
