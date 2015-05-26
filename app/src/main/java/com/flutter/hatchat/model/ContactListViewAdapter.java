@@ -29,6 +29,7 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
         TextView contactNameText;
         TextView contactNumberText;
         ImageView itemClickedImageView;
+        ImageView ownsAppImageView;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -41,14 +42,17 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
             holder = new ContactViewHolder();
             holder.contactNameText = (TextView) convertView.findViewById(R.id.contactNameTextView);
             holder.contactNumberText = (TextView)convertView.findViewById(R.id.contactNumberTextView);
-            holder.itemClickedImageView = (ImageView) convertView.findViewById(R.id.itemClicked);
+            holder.itemClickedImageView = (ImageView) convertView.findViewById(R.id.itemClickedImageView);
+            holder.ownsAppImageView = (ImageView) convertView.findViewById(R.id.contactHasAppImageView);
             convertView.setTag(holder);
         } else {
             Log.i("run","convertView!=null");
             holder = (ContactViewHolder) convertView.getTag();
         }
+
         holder.contactNameText.setText(rowItem.getName());
         holder.contactNumberText.setText(rowItem.getPhoneNumber());
+
         if (rowItem.getSelected()) {
             //Selected Picture
             holder.itemClickedImageView.setImageResource(R.mipmap.ic_launcher);
@@ -56,6 +60,15 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
             //Did not select picture
             holder.itemClickedImageView.setImageResource(R.color.abc_background_cache_hint_selector_material_light);
         }
+
+        if (rowItem.getHasApp()) {
+            //Owns app
+            holder.ownsAppImageView.setImageResource(R.mipmap.ic_launcher);
+        } else {
+            //Does not own app
+            holder.ownsAppImageView.setImageResource(R.color.abc_background_cache_hint_selector_material_light);
+        }
+
         return convertView;
     }
 }

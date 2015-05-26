@@ -17,11 +17,19 @@ import android.view.MenuItem;
 
 import com.flutter.hatchat.R;
 import com.flutter.hatchat.database.ContactsDataService;
+import com.flutter.hatchat.database.ParseQueries;
 import com.flutter.hatchat.model.Contact;
 import com.flutter.hatchat.model.ContactRowItem;
+import com.flutter.hatchat.model.User;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -32,16 +40,12 @@ public class SplashScreenActivity extends ActionBarActivity {
 
     private ContactsDataService contactsDataService;
     private List<ContactRowItem> contactRowItemList;
-    private List<Contact> contactList;
 
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.i("Tag", "In onServiceConnected");
             ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
             contactsDataService = binder.getService();
-
-            //Get Data from server
 
             //Get Contact Data and put in the Service
             FindContactsInBackground f = new FindContactsInBackground();
@@ -62,6 +66,41 @@ public class SplashScreenActivity extends ActionBarActivity {
 
     public void getDataFromServer() {
 
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        Log.i("Tag", "In getDataFromServer");
+
+        if (currentUser != null) {
+
+            ParseRelation<Contact> relation = currentUser.getRelation("contacts");
+            relation.getQuery().findInBackground(new FindCallback<Contact>() {
+                @Override
+                public void done(List<Contact> list, ParseException e) {
+                    Log.i("Tag", "In getDataFromServer:done()");
+                    if (list != null && list.size() > 0) {
+                        contactsDataService.storeContacts(list);
+
+                        for (int i = 0; i < contactRowItemList.size(); i++) {
+                            Contact tempContact = new Contact();
+                            tempContact.setPhoneNumber(contactRowItemList.get(i).getPhoneNumber());
+
+                            if (list.contains(tempContact)) {
+                                contactRowItemList.get(i).setSelected(true);
+                            }
+                        }
+                    }
+
+                    contactsDataService.storeContactRowItems(contactRowItemList);
+                    finishSplashActivity();
+
+                }
+            });
+
+
+        } else {
+            contactsDataService.storeContactRowItems(contactRowItemList);
+            finishSplashActivity();
+        }
+
     }
 
     public void finishSplashActivity() {
@@ -80,16 +119,14 @@ public class SplashScreenActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i("Tag", "In onStart");
         Intent i = new Intent(this,ContactsDataService.class);
         bindService(i, contactsServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         unbindService(contactsServiceConnection);
-        finish();
     }
 
     private class FindContactsInBackground extends AsyncTask <Void,Void,Void> {
@@ -101,10 +138,7 @@ public class SplashScreenActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Log.i("Tag", "In onPostExecute");
-            Collections.sort(contactRowItemList);
-            contactsDataService.storeContactRowItems(contactRowItemList);
-            finishSplashActivity();
+            findUsers();
         }
 
         @Override
@@ -114,14 +148,14 @@ public class SplashScreenActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.i("Tag", "In doInBackGround");
             findAndStoreContacts();
+            Collections.sort(contactRowItemList);
+
             return null;
         }
     }
 
     public void findAndStoreContacts() {
-        Log.i("Tag", "In findAndStoreContacts");
         ContentResolver cr = getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -160,5 +194,36 @@ public class SplashScreenActivity extends ActionBarActivity {
 
             }
         }
+        cur.close();
+    }
+
+    public void findUsers() {
+        ParseQuery query = ParseQueries.createUsersQuery();
+        Log.i("Tag", "In findUsers");
+        query.findInBackground(new FindCallback() {
+            @Override
+            public void done(List list, ParseException e) {
+
+            }
+
+            @Override
+            public void done(Object o, Throwable throwable) {
+
+                List list = (List) o;
+                if (o != null && list.size() > 0) {
+                    for (int i = 0; i < contactRowItemList.size(); i++) {
+                        User tempUser = new User();
+                        tempUser.setPhoneNumber(contactRowItemList.get(i).getPhoneNumber());
+                        if (list.contains(tempUser)) {
+                            contactRowItemList.get(i).setHasApp(true);
+                        }
+                    }
+                }
+
+                //Get Data from server
+                getDataFromServer();
+
+            }
+        });
     }
 }

@@ -1,10 +1,14 @@
 package com.flutter.hatchat.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.EditText;
 
 import com.digits.sdk.android.AuthCallback;
 
@@ -16,6 +20,7 @@ import com.flutter.hatchat.model.User;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -76,13 +81,81 @@ public class LoginActivity extends ActionBarActivity {
                             } else {
                                 //Failure
                                 //Show Alert
+
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                                alertDialog.setTitle("Error");
+                                alertDialog.setMessage("There was a problem signing up.")
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LoginActivity.this.finish();
+                                            }
+
+                                        });
+                                AlertDialog dialog = alertDialog.create();
+                                dialog.show();
                                 e.printStackTrace();
                             }
                         }
                     });
                 } else {
-                    Intent intent = new Intent(context, AddFriendsActivity.class);
-                    startActivity(intent);
+                    //ParseUser.logInInBackground("4108524395", "4108524395");
+                    TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+                    String mPhoneNumber = tMgr.getLine1Number();
+
+                    PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+                    try {
+                        Phonenumber.PhoneNumber number = phoneUtil.parse(mPhoneNumber, "US");
+                        mPhoneNumber = "" + number.getNationalNumber();
+                    } catch (NumberParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (mPhoneNumber.length() > 0) {
+                        ParseUser.logInInBackground(mPhoneNumber, mPhoneNumber);
+                        Intent intent = new Intent(context, AddFriendsActivity.class);
+                        startActivity(intent);
+                    } else {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+
+                        final EditText editText = new EditText(context);
+                        editText.setHint("Your phone number");
+
+                        dialog.setTitle("Login")
+                                .setMessage("Please enter your phone number")
+                                .setView(editText)
+                                .setPositiveButton("DONE", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String theEnteredNumber = editText.getText().toString();
+                                        ParseUser.logInInBackground(theEnteredNumber, theEnteredNumber, new LogInCallback() {
+                                            @Override
+                                            public void done(ParseUser parseUser, ParseException e) {
+                                                if (parseUser == null) {
+                                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                                                    alertDialog.setTitle("Error");
+                                                    alertDialog.setMessage("There was a problem logging in.")
+                                                            .setCancelable(false)
+                                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    LoginActivity.this.finish();
+                                                                }
+
+                                                            });
+                                                    AlertDialog dialog = alertDialog.create();
+                                                    dialog.show();
+                                                } else {
+                                                    Intent intent = new Intent(context, AddFriendsActivity.class);
+                                                    startActivity(intent);
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                    }
+
                 }
 
             }
@@ -91,6 +164,21 @@ public class LoginActivity extends ActionBarActivity {
             public void failure(DigitsException e) {
                 Log.i("Failure", "Failure");
                 //Show Alert
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                alertDialog.setTitle("Error");
+                alertDialog.setMessage("There was a problem signing up.")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                LoginActivity.this.finish();
+                            }
+
+                        });
+                AlertDialog dialog = alertDialog.create();
+                dialog.show();
+                e.printStackTrace();
             }
         });
 

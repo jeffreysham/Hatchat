@@ -12,7 +12,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:textSize="20dp"
-        android:text="Jeffrey Sham"
         android:layout_toStartOf="@+id/contactNumberTextView"
         android:layout_toLeftOf="@+id/contactNumberTextView" />
 
@@ -21,15 +20,22 @@
         android:layout_height="wrap_content"
         android:id="@+id/contactNumberTextView"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/itemClicked"
+        android:layout_toLeftOf="@+id/contactHasAppImageView"
         android:layout_marginRight="10dp"
-        android:textSize="20dp"
-        android:text="4108524395" />
+        android:textSize="20dp" />
 
     <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:id="@+id/itemClicked"
+        android:id="@+id/contactHasAppImageView"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@+id/itemClickedImageView"/>
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:id="@+id/itemClickedImageView"
         android:src="@mipmap/ic_launcher"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"/>

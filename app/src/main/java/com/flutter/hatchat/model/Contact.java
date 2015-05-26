@@ -15,4 +15,25 @@ public class Contact extends ParseObject{
     public void setPhoneNumber(String phoneNumber) {
         put("phoneNumber", phoneNumber);
     }
+
+    public String getName() {
+        return getString("name");
+    }
+
+    public void setName(String name) {
+        put("name", name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Contact) {
+            Contact tempContact = (Contact) o;
+            return getPhoneNumber().equals(tempContact.getPhoneNumber());
+        } else if (o instanceof ContactRowItem) {
+            ContactRowItem rowItem = (ContactRowItem) o;
+            return getPhoneNumber().equals(rowItem.getPhoneNumber());
+        }
+        return false;
+
+    }
 }
