@@ -11,12 +11,15 @@
     <string name="welcome">Welcome to Hatchat!\nTo start, please press\nthe button below.</string>
     <string name="add_friends">Please select at least 15 friends to add to your Hat!</string>
     <string name="friends_limit">/15 All contacts</string>
-
     <string name="done">DONE</string>
+    <string name="add_new_friends">Add friends</string>
+
+
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
     <string name="title_activity_home_screen">HomeScreenActivity</string>
     <string name="title_activity_write_new_message">WriteNewMessageActivity</string>
     <string name="title_activity_chats">ChatsActivity</string>
     <string name="title_activity_friends">FriendsActivity</string>
     <string name="title_activity_add_friends">AddFriendsActivity</string>
+    <string name="title_activity_add_new_friends">AddNewFriendsActivity</string>
 </resources>

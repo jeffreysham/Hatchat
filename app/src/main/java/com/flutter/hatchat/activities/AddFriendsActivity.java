@@ -81,9 +81,10 @@ public class AddFriendsActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         unbindService(contactsServiceConnection);
+        finish();
     }
 
     public void displayContacts() {
@@ -162,6 +163,7 @@ public class AddFriendsActivity extends ActionBarActivity {
         Contact tempContact = new Contact();
         tempContact.setPhoneNumber(tempRowItem.getPhoneNumber());
         tempContact.setName(tempRowItem.getName());
+        tempContact.setIsMessaging(false);
         if (selected) {
             contactList.add(tempContact);
         } else {

@@ -24,6 +24,22 @@ public class Contact extends ParseObject{
         put("name", name);
     }
 
+    public boolean getIsMessaging() {
+        return getBoolean("isMessaging");
+    }
+
+    public void setIsMessaging(boolean isMessaging) {
+        put("isMessaging", isMessaging);
+    }
+
+    public boolean getHasApp() {
+        return getBoolean("hasApp");
+    }
+
+    public void setHasApp(boolean hasApp) {
+        put("hasApp", hasApp);
+    }
+
     @Override
     public boolean equals(Object o) {
         if(o instanceof Contact) {

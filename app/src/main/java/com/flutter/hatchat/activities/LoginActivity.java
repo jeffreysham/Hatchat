@@ -1,10 +1,13 @@
 package com.flutter.hatchat.activities;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -16,6 +19,8 @@ import com.digits.sdk.android.DigitsAuthButton;
 import com.digits.sdk.android.DigitsException;
 import com.digits.sdk.android.DigitsSession;
 import com.flutter.hatchat.R;
+import com.flutter.hatchat.database.ContactsDataService;
+import com.flutter.hatchat.model.ContactRowItem;
 import com.flutter.hatchat.model.User;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -25,10 +30,42 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.util.List;
+
 
 public class LoginActivity extends ActionBarActivity {
 
     private Context context = this;
+    private ContactsDataService contactsDataService;
+
+
+    ServiceConnection contactsServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
+            contactsDataService = binder.getService();
+
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            contactsDataService = null;
+        }
+
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent i = new Intent(this,ContactsDataService.class);
+        bindService(i, contactsServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(contactsServiceConnection);
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +137,7 @@ public class LoginActivity extends ActionBarActivity {
                         }
                     });
                 } else {
-                    //ParseUser.logInInBackground("4108524395", "4108524395");
+
                     TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
                     String mPhoneNumber = tMgr.getLine1Number();
 
@@ -114,7 +151,7 @@ public class LoginActivity extends ActionBarActivity {
 
                     if (mPhoneNumber.length() > 0) {
                         ParseUser.logInInBackground(mPhoneNumber, mPhoneNumber);
-                        Intent intent = new Intent(context, AddFriendsActivity.class);
+                        Intent intent = new Intent(context, HomeScreenActivity.class);
                         startActivity(intent);
                     } else {
                         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
@@ -147,7 +184,7 @@ public class LoginActivity extends ActionBarActivity {
                                                     AlertDialog dialog = alertDialog.create();
                                                     dialog.show();
                                                 } else {
-                                                    Intent intent = new Intent(context, AddFriendsActivity.class);
+                                                    Intent intent = new Intent(context, HomeScreenActivity.class);
                                                     startActivity(intent);
                                                 }
                                             }

@@ -81,10 +81,16 @@ public class SplashScreenActivity extends ActionBarActivity {
 
                         for (int i = 0; i < contactRowItemList.size(); i++) {
                             Contact tempContact = new Contact();
-                            tempContact.setPhoneNumber(contactRowItemList.get(i).getPhoneNumber());
+                            ContactRowItem item = contactRowItemList.get(i);
+                            tempContact.setPhoneNumber(item.getPhoneNumber());
 
-                            if (list.contains(tempContact)) {
-                                contactRowItemList.get(i).setSelected(true);
+                            int index = list.indexOf(tempContact);
+
+                            if (index > 0) {
+                                item.setSelected(true);
+                                Contact theContact = list.get(index);
+                                theContact.setHasApp(item.getHasApp());
+                                theContact.saveInBackground();
                             }
                         }
                     }
@@ -111,7 +117,7 @@ public class SplashScreenActivity extends ActionBarActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(this, AddFriendsActivity.class);
+            Intent intent = new Intent(this, HomeScreenActivity.class);
             startActivity(intent);
         }
     }
@@ -124,9 +130,10 @@ public class SplashScreenActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         unbindService(contactsServiceConnection);
+        finish();
     }
 
     private class FindContactsInBackground extends AsyncTask <Void,Void,Void> {
