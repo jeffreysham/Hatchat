@@ -13,7 +13,8 @@
     <string name="friends_limit">/15 All contacts</string>
     <string name="done">DONE</string>
     <string name="add_new_friends">Add friends</string>
-
+    <string name="search_contacts">Search contacts..</string>
+    <string name="search_chats">Search chats..</string>
 
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
     <string name="title_activity_home_screen">HomeScreenActivity</string>

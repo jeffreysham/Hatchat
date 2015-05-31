@@ -20,6 +20,7 @@ import com.flutter.hatchat.database.ContactsDataService;
 import com.flutter.hatchat.database.ParseQueries;
 import com.flutter.hatchat.model.Contact;
 import com.flutter.hatchat.model.ContactRowItem;
+import com.flutter.hatchat.model.Message;
 import com.flutter.hatchat.model.User;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -64,20 +65,47 @@ public class SplashScreenActivity extends ActionBarActivity {
         setContentView(R.layout.activity_splash_screen);
     }
 
+    public void getUserSenderMessages(final String phoneNumber) {
+        ParseQuery<Message> query = ParseQueries.createUserSenderMessagesQuery(phoneNumber);
+        query.findInBackground(new FindCallback<Message>() {
+            @Override
+            public void done(List<Message> list, ParseException e) {
+                if (list.size() > 0) {
+                    contactsDataService.storeUserSenderMessages(list);
+                }
+                getUserRecipientMessages(phoneNumber);
+
+            }
+        });
+    }
+
+    public void getUserRecipientMessages(String phoneNumber) {
+        ParseQuery<Message> query = ParseQueries.createUserRecipientMessagesQuery(phoneNumber);
+        query.findInBackground(new FindCallback<Message>() {
+            @Override
+            public void done(List<Message> list, ParseException e) {
+                if (list.size() > 0) {
+                    contactsDataService.storeUserRecipientMessages(list);
+                }
+                finishSplashActivity();
+            }
+        });
+    }
+
     public void getDataFromServer() {
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
+        final ParseUser currentUser = ParseUser.getCurrentUser();
         Log.i("Tag", "In getDataFromServer");
 
         if (currentUser != null) {
 
-            ParseRelation<Contact> relation = currentUser.getRelation("contacts");
-            relation.getQuery().findInBackground(new FindCallback<Contact>() {
+            ParseQuery relationQuery = ParseQueries.createContactsQuery(currentUser);
+
+            relationQuery.findInBackground(new FindCallback<Contact>() {
                 @Override
                 public void done(List<Contact> list, ParseException e) {
                     Log.i("Tag", "In getDataFromServer:done()");
                     if (list != null && list.size() > 0) {
-                        contactsDataService.storeContacts(list);
 
                         for (int i = 0; i < contactRowItemList.size(); i++) {
                             Contact tempContact = new Contact();
@@ -86,18 +114,19 @@ public class SplashScreenActivity extends ActionBarActivity {
 
                             int index = list.indexOf(tempContact);
 
-                            if (index > 0) {
+                            if (index > -1) {
                                 item.setSelected(true);
                                 Contact theContact = list.get(index);
                                 theContact.setHasApp(item.getHasApp());
                                 theContact.saveInBackground();
                             }
                         }
+                        Collections.sort(list);
+                        contactsDataService.storeContacts(list);
                     }
 
                     contactsDataService.storeContactRowItems(contactRowItemList);
-                    finishSplashActivity();
-
+                    getUserSenderMessages(currentUser.getString("phoneNumber"));
                 }
             });
 

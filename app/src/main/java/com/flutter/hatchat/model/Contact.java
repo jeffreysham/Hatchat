@@ -6,7 +6,7 @@ import com.parse.ParseClassName;
  * Created by Jeffrey Sham on 5/22/2015.
  */
 @ParseClassName("Contact")
-public class Contact extends ParseObject{
+public class Contact extends ParseObject implements Comparable{
 
     public String getPhoneNumber() {
         return getString("phoneNumber");
@@ -51,5 +51,17 @@ public class Contact extends ParseObject{
         }
         return false;
 
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        if (another instanceof ContactRowItem) {
+            ContactRowItem other = (ContactRowItem) another;
+            return this.getPhoneNumber().compareTo(other.getPhoneNumber());
+        } else if (another instanceof Contact) {
+            Contact other = (Contact) another;
+            return this.getName().compareTo(other.getName());
+        }
+        return 0;
     }
 }

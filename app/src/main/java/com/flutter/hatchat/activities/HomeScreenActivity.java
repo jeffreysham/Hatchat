@@ -14,6 +14,8 @@ import android.widget.Button;
 
 import com.flutter.hatchat.R;
 import com.flutter.hatchat.database.ContactsDataService;
+import com.parse.ParseInstallation;
+import com.parse.ParseUser;
 
 public class HomeScreenActivity extends ActionBarActivity {
 
@@ -65,6 +67,14 @@ public class HomeScreenActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null && ParseInstallation.getCurrentInstallation() != null && ParseInstallation.getCurrentInstallation().getString("userId") == null) {
+
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("userId", currentUser.getObjectId());
+            installation.saveInBackground();
+        }
     }
 
     @Override

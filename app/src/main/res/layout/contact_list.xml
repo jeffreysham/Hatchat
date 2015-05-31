@@ -33,6 +33,13 @@
             android:gravity="left" />
     </LinearLayout>
 
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/inputSearch"
+        android:hint="@string/search_contacts"
+        android:inputType="textVisiblePassword"/>
+
     <ListView android:id="@+id/contactListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

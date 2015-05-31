@@ -14,8 +14,7 @@
         android:textSize="20sp"
         android:layout_toStartOf="@+id/removeFriendImageView"
         android:layout_toLeftOf="@+id/removeFriendImageView"
-        android:layout_marginLeft="5dp"
-        android:text="Jeffrey Sham"/>
+        android:layout_marginLeft="5dp"/>
 
     <ImageView
         android:layout_width="20dp"

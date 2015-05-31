@@ -1,14 +1,18 @@
 package com.flutter.hatchat.application;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.digits.sdk.android.Digits;
 import com.flutter.hatchat.model.Contact;
 import com.flutter.hatchat.model.Message;
 import com.flutter.hatchat.model.User;
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 
@@ -35,5 +39,16 @@ public class HatChatApp extends Application {
         ParseObject.registerSubclass(Message.class);
 
         Parse.initialize(this, "UWvPqv4YjfKsD8shypFuNMR9Ci5z2N05apvOpMXf", "sJU25a90mzO5WbqXfsOedeTU9LH4sjfFFdUE5mUz");
+
+        ParsePush.subscribeInBackground("", new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
+                }
+            }
+        });
     }
 }

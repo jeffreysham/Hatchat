@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.flutter.hatchat.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,10 +21,16 @@ import java.util.List;
  */
 public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
     private Context context;
+    private ContactsListFilter filter;
+    private List<ContactRowItem> originalList;
+    private List<ContactRowItem> filteredList;
 
     public ContactListViewAdapter(Context context, int resource, List<ContactRowItem> items) {
         super(context, resource, items);
         this.context = context;
+        this.filteredList = items;
+        this.originalList = new ArrayList<>();
+        this.originalList.addAll(items);
     }
 
     private class ContactViewHolder {
@@ -34,7 +42,7 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ContactViewHolder holder;
-        ContactRowItem rowItem = getItem(position);
+        ContactRowItem rowItem = filteredList.get(position);
         LayoutInflater rowViewInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         if(convertView == null){
             Log.i("run", "convertView==null");
@@ -50,25 +58,76 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
             holder = (ContactViewHolder) convertView.getTag();
         }
 
-        holder.contactNameText.setText(rowItem.getName());
-        holder.contactNumberText.setText(rowItem.getPhoneNumber());
+        if (rowItem != null) {
+            holder.contactNameText.setText(rowItem.getName());
+            holder.contactNumberText.setText(rowItem.getPhoneNumber());
 
-        if (rowItem.getSelected()) {
-            //Selected Picture
-            holder.itemClickedImageView.setImageResource(R.mipmap.ic_launcher);
-        } else {
-            //Did not select picture
-            holder.itemClickedImageView.setImageResource(R.color.abc_background_cache_hint_selector_material_light);
-        }
+            if (rowItem.getSelected()) {
+                //Selected Picture
+                holder.itemClickedImageView.setImageResource(R.mipmap.ic_launcher);
+            } else {
+                //Did not select picture
+                holder.itemClickedImageView.setImageResource(R.color.abc_background_cache_hint_selector_material_light);
+            }
 
-        if (rowItem.getHasApp()) {
-            //Owns app
-            holder.ownsAppImageView.setImageResource(R.mipmap.ic_launcher);
-        } else {
-            //Does not own app
-            holder.ownsAppImageView.setImageResource(R.color.abc_background_cache_hint_selector_material_light);
+            if (rowItem.getHasApp()) {
+                //Owns app
+                holder.ownsAppImageView.setImageResource(R.mipmap.ic_launcher);
+            } else {
+                //Does not own app
+                holder.ownsAppImageView.setImageResource(R.color.abc_background_cache_hint_selector_material_light);
+            }
         }
 
         return convertView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (filter == null) {
+            filter = new ContactsListFilter();
+        }
+        return filter;
+    }
+
+    private class ContactsListFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            String prefix = constraint.toString().toLowerCase().trim();
+
+            if (prefix == null || prefix.length() == 0) {
+                results.values = originalList;
+                results.count = originalList.size();
+            } else {
+                ArrayList<ContactRowItem> newList = new ArrayList<>();
+
+                for (int i = 0; i < originalList.size(); i++) {
+                    ContactRowItem contactRowItem = originalList.get(i);
+                    String value = contactRowItem.getName().toLowerCase();
+                    String phoneNumber = contactRowItem.getPhoneNumber();
+                    if (value.contains(prefix) || phoneNumber.contains(prefix)) {
+                        newList.add(contactRowItem);
+                    }
+                }
+
+                results.values = newList;
+                results.count = newList.size();
+            }
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            filteredList = (ArrayList<ContactRowItem>) results.values;
+            notifyDataSetChanged();
+            clear();
+            for (int i = 0; i < filteredList.size(); i++) {
+                ContactRowItem contactRowItem = (ContactRowItem) filteredList.get(i);
+                add(contactRowItem);
+            }
+            notifyDataSetInvalidated();
+        }
     }
 }

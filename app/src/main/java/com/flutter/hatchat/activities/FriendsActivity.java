@@ -8,11 +8,14 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.flutter.hatchat.R;
@@ -24,6 +27,7 @@ import com.flutter.hatchat.model.User;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
+import java.util.Collections;
 import java.util.List;
 
 public class FriendsActivity extends ActionBarActivity {
@@ -58,6 +62,15 @@ public class FriendsActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (friendsList != null && listViewAdapter != null) {
+            Collections.sort(friendsList);
+            listViewAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindService(contactsServiceConnection);
@@ -68,6 +81,23 @@ public class FriendsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friends_list);
         friendsListView = (ListView) findViewById(R.id.friendsListView);
+        EditText inputSearch = (EditText) findViewById(R.id.inputSearch);
+        inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                FriendsActivity.this.listViewAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     public void displayFriends() {

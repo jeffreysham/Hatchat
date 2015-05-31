@@ -7,6 +7,7 @@ import android.os.IBinder;
 
 import com.flutter.hatchat.model.Contact;
 import com.flutter.hatchat.model.ContactRowItem;
+import com.flutter.hatchat.model.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +19,16 @@ public class ContactsDataService extends Service{
     private IBinder binder = new ContactBinder();
     List<ContactRowItem> contactRowItemList;
     List<Contact> contactList;
+    List<Message> userSenderMessageList;
+    List<Message> userRecipientMessageList;
 
     @Override
     public void onCreate() {
         super.onCreate();
         contactRowItemList = new ArrayList<ContactRowItem>();
         contactList = new ArrayList<Contact>();
+        userSenderMessageList = new ArrayList<>();
+        userRecipientMessageList = new ArrayList<>();
     }
 
     @Override
@@ -51,5 +56,21 @@ public class ContactsDataService extends Service{
 
     public List<Contact> getContactList(){
         return contactList;
+    }
+
+    public void storeUserSenderMessages(List<Message> messages) {
+        this.userSenderMessageList = messages;
+    }
+
+    public List<Message> getUserSenderMessageList() {
+        return userSenderMessageList;
+    }
+
+    public void storeUserRecipientMessages(List<Message> messages) {
+        this.userRecipientMessageList = messages;
+    }
+
+    public List<Message> getUserRecipientMessageList() {
+        return userRecipientMessageList;
     }
 }

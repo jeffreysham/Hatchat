@@ -7,10 +7,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by Joanna Kai on 5/22/2015.
+ * Created by Jeffrey Sham on 5/22/2015.
  */
 @ParseClassName("Message")
-public class Message extends ParseObject{
+public class Message extends ParseObject implements Comparable{
     public void setMessage(String value) {
         put("message", value);
     }
@@ -40,8 +40,20 @@ public class Message extends ParseObject{
         put("date", calendar.getTime());
     }
 
+    public void setDate(Date date) {
+        put("date", date);
+    }
+
     public Date getDate() {
         return getDate("date");
     }
 
+    @Override
+    public int compareTo(Object another) {
+        if (another instanceof Message) {
+            Message other = (Message) another;
+            return getDate().compareTo(other.getDate());
+        }
+        return 0;
+    }
 }
