@@ -48,6 +48,8 @@ public class Contact extends ParseObject implements Comparable{
         } else if (o instanceof ContactRowItem) {
             ContactRowItem rowItem = (ContactRowItem) o;
             return getPhoneNumber().equals(rowItem.getPhoneNumber());
+        } else if (o instanceof String) {
+            return getPhoneNumber().equals(o);
         }
         return false;
 

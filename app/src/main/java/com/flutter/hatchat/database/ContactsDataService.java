@@ -17,10 +17,12 @@ import java.util.List;
  */
 public class ContactsDataService extends Service{
     private IBinder binder = new ContactBinder();
+
     List<ContactRowItem> contactRowItemList;
     List<Contact> contactList;
     List<Message> userSenderMessageList;
     List<Message> userRecipientMessageList;
+    List<Message> userSpecficMessageList;
 
     @Override
     public void onCreate() {
@@ -29,6 +31,7 @@ public class ContactsDataService extends Service{
         contactList = new ArrayList<Contact>();
         userSenderMessageList = new ArrayList<>();
         userRecipientMessageList = new ArrayList<>();
+        userSpecficMessageList = new ArrayList<>();
     }
 
     @Override
@@ -72,5 +75,13 @@ public class ContactsDataService extends Service{
 
     public List<Message> getUserRecipientMessageList() {
         return userRecipientMessageList;
+    }
+
+    public void storeUserSpecificMessages(List<Message> messages) {
+        this.userSpecficMessageList = messages;
+    }
+
+    public List<Message> getUserSpecficMessageList() {
+        return userSpecficMessageList;
     }
 }

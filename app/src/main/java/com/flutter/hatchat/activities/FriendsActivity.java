@@ -38,6 +38,9 @@ public class FriendsActivity extends ActionBarActivity {
     private ListView friendsListView;
     private FriendListViewAdapter listViewAdapter;
 
+    /**
+     * Get/use the data service
+     */
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -61,18 +64,24 @@ public class FriendsActivity extends ActionBarActivity {
         bindService(i, contactsServiceConnection, BIND_AUTO_CREATE);
     }
 
+    /**
+     * Update the friends list
+     */
     @Override
     protected void onResume() {
         super.onResume();
         if (friendsList != null && listViewAdapter != null) {
-            Collections.sort(friendsList);
+            if (friendsList.size() > 1) {
+                Collections.sort(friendsList);
+            }
+
             listViewAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         unbindService(contactsServiceConnection);
     }
 
@@ -81,6 +90,8 @@ public class FriendsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friends_list);
         friendsListView = (ListView) findViewById(R.id.friendsListView);
+
+        //Search through list
         EditText inputSearch = (EditText) findViewById(R.id.inputSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -100,6 +111,9 @@ public class FriendsActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * Display friends in list
+     */
     public void displayFriends() {
         listViewAdapter = new FriendListViewAdapter(this, R.layout.friends_list_item,friendsList);
         friendsListView.setAdapter(listViewAdapter);
@@ -112,6 +126,9 @@ public class FriendsActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * Removes friend at the clicked list item
+     */
     private void handleItemClick(ListView l, View v, int position, long id) {
         final Contact theContact = (Contact) l.getItemAtPosition(position);
 
@@ -135,6 +152,9 @@ public class FriendsActivity extends ActionBarActivity {
         alertDialog.show();
     }
 
+    /**
+     * Removes the contact from user's relation
+     */
     private void removeContact(Contact theContact) {
         friendsList.remove(theContact);
         ParseUser currentUser = ParseUser.getCurrentUser();

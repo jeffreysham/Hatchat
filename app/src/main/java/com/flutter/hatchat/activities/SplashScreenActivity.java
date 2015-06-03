@@ -65,6 +65,7 @@ public class SplashScreenActivity extends ActionBarActivity {
         setContentView(R.layout.activity_splash_screen);
     }
 
+    //Gets the messages sent by the user
     public void getUserSenderMessages(final String phoneNumber) {
         ParseQuery<Message> query = ParseQueries.createUserSenderMessagesQuery(phoneNumber);
         query.findInBackground(new FindCallback<Message>() {
@@ -79,6 +80,7 @@ public class SplashScreenActivity extends ActionBarActivity {
         });
     }
 
+    //Gets the messages that are sent to the user
     public void getUserRecipientMessages(String phoneNumber) {
         ParseQuery<Message> query = ParseQueries.createUserRecipientMessagesQuery(phoneNumber);
         query.findInBackground(new FindCallback<Message>() {
@@ -92,6 +94,7 @@ public class SplashScreenActivity extends ActionBarActivity {
         });
     }
 
+    //Gets the contacts that the user selected to randomly message
     public void getDataFromServer() {
 
         final ParseUser currentUser = ParseUser.getCurrentUser();
@@ -107,6 +110,7 @@ public class SplashScreenActivity extends ActionBarActivity {
                     Log.i("Tag", "In getDataFromServer:done()");
                     if (list != null && list.size() > 0) {
 
+                        //Sets up the contact and contact row item information
                         for (int i = 0; i < contactRowItemList.size(); i++) {
                             Contact tempContact = new Contact();
                             ContactRowItem item = contactRowItemList.get(i);
@@ -138,6 +142,7 @@ public class SplashScreenActivity extends ActionBarActivity {
 
     }
 
+    //Decides where to go after the splash activity
     public void finishSplashActivity() {
         //Go to Login Activity or go to main screen
         ParseUser currentUser = ParseUser.getCurrentUser();
@@ -191,6 +196,7 @@ public class SplashScreenActivity extends ActionBarActivity {
         }
     }
 
+    //Finds the contacts on the phone and stores them as contact row items
     public void findAndStoreContacts() {
         ContentResolver cr = getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
@@ -208,7 +214,7 @@ public class SplashScreenActivity extends ActionBarActivity {
                     if (pCur.moveToNext()) {
                         // Do something with phones
                         String number = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
-
+                        
                         String realPhoneNumber = "";
 
                         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();

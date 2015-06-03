@@ -29,6 +29,9 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -41,6 +44,7 @@ public class WriteNewMessageActivity extends ActionBarActivity {
     private Button sendButton;
     private Context context = this;
 
+    //Get/use the data service
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -64,6 +68,7 @@ public class WriteNewMessageActivity extends ActionBarActivity {
         sendButton = (Button) findViewById(R.id.sendButton);
     }
 
+    //Sets up the on click listener
     public void setUpSendButton() {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +91,8 @@ public class WriteNewMessageActivity extends ActionBarActivity {
         unbindService(contactsServiceConnection);
     }
 
+    //Sends the message to the server and to the contact. Also sends a push notification
+    //if the user has the application
     public void sendMessage() {
         List<Contact> contactListToSend = new ArrayList<>();
         for (int i = 0; i < contactList.size(); i++) {
@@ -107,7 +114,7 @@ public class WriteNewMessageActivity extends ActionBarActivity {
 
             final String theMessageToSend = editText.getText().toString().trim();
 
-            Message theMessage = new Message();
+            final Message theMessage = new Message();
             theMessage.setDate();
             theMessage.setMessage(theMessageToSend);
             theMessage.setSender(ParseUser.getCurrentUser().getUsername());
@@ -136,9 +143,19 @@ public class WriteNewMessageActivity extends ActionBarActivity {
                     @Override
                     public void done(ParseUser parseUser, ParseException e) {
                         if (parseUser != null) {
+                            JSONObject object = new JSONObject();
+                            try {
+                                object.put("status", "new message");
+                                object.put("sender", theMessage.getSender());
+                            } catch (JSONException exception) {
+                                exception.printStackTrace();
+                            }
+
+
                             ParsePush push = new ParsePush();
                             push.setQuery(ParseQueries.createPushQuery(parseUser.getObjectId()));
                             push.setMessage(theMessageToSend);
+                            push.setData(object);
                             push.sendInBackground();
                         } else {
                             //SHOULD NOT GO HERE
@@ -176,27 +193,5 @@ public class WriteNewMessageActivity extends ActionBarActivity {
 
 
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_write_new_message, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

@@ -39,7 +39,6 @@ import java.util.List;
 
 public class AddNewFriendsActivity extends ActionBarActivity {
 
-
     private List<ContactRowItem> contactRowItemList;
     private List<Contact> contactList;
     private ContactListViewAdapter listViewAdapter;
@@ -47,6 +46,9 @@ public class AddNewFriendsActivity extends ActionBarActivity {
 
     private ContactsDataService contactsDataService;
 
+    /**
+     * Get/use the data service.
+     */
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -84,6 +86,8 @@ public class AddNewFriendsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friends_list);
         contactListView = (ListView) findViewById(R.id.friendsListView);
+
+        //Search through list
         EditText inputSearch = (EditText) findViewById(R.id.inputSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -103,6 +107,9 @@ public class AddNewFriendsActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * Displays the contacts in the list
+     */
     public void displayContacts() {
         listViewAdapter = new ContactListViewAdapter(this, R.layout.contacts_list_item,contactRowItemList);
         contactListView.setAdapter(listViewAdapter);
@@ -115,6 +122,9 @@ public class AddNewFriendsActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * Select contacts. Add them to the contact list and update the list.
+     */
     private void onListItemClick(ListView l, View v, int position, long id) {
 
         ContactRowItem tempRowItem = (ContactRowItem)l.getItemAtPosition(position);
@@ -141,6 +151,9 @@ public class AddNewFriendsActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * This updates the list to show that the contact was selected/unselected
+     */
     private void updateView(View view, boolean selected) {
         ImageView imageView = (ImageView) view.findViewById(R.id.itemClickedImageView);
         if (selected) {
@@ -152,6 +165,9 @@ public class AddNewFriendsActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Save contacts to server
+     */
     public void saveContacts(){
         ParseUser currentUser = ParseUser.getCurrentUser();
 
@@ -174,6 +190,9 @@ public class AddNewFriendsActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Removes all contacts from the user. This is to ensure no repeated contacts.
+     */
     public void removeAllContacts(){
         final ParseUser currentUser = ParseUser.getCurrentUser();
         ParseQuery relationQuery = ParseQueries.createContactsQuery(currentUser);

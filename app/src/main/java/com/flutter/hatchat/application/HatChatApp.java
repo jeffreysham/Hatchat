@@ -11,6 +11,7 @@ import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
+import com.parse.ParsePushBroadcastReceiver;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -27,6 +28,7 @@ public class HatChatApp extends Application {
     private static final String TWITTER_KEY = "POIAFygJJJ70eoYpfznJmjIgs";
     private static final String TWITTER_SECRET = "uuZABikd3HkOVX3lSNc7TZDBiZZPSjjyznnsCJPWN4kR00aevh";
 
+    //Sets up using Digits and Parse
     @Override
     public void onCreate() {
         super.onCreate();

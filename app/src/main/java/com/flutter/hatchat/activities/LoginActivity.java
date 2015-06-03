@@ -38,7 +38,7 @@ public class LoginActivity extends ActionBarActivity {
     private Context context = this;
     private ContactsDataService contactsDataService;
 
-
+    //Maintains the service until it gets to AddFriendsActivity
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -72,6 +72,7 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Uses Digits in order to do phone number authentication
         final DigitsAuthButton digitsAuthButton = (DigitsAuthButton) findViewById(R.id.auth_button);
         digitsAuthButton.setCallback(new AuthCallback() {
             @Override
@@ -137,7 +138,7 @@ public class LoginActivity extends ActionBarActivity {
                         }
                     });
                 } else {
-
+                    //For some reason the user was logged out, need to log them back in
                     TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
                     String mPhoneNumber = tMgr.getLine1Number();
 

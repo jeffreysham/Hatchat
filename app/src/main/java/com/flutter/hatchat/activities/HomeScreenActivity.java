@@ -23,6 +23,9 @@ public class HomeScreenActivity extends ActionBarActivity {
 
     private ContactsDataService contactsDataService;
 
+    /**
+     * Maintains the service for the whole app
+     */
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -41,6 +44,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen);
 
+        //Go to WriteNewMessageActivity
         Button writeNewMessageButton = (Button) findViewById(R.id.writeNewMessageButton);
         writeNewMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +54,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             }
         });
 
+        //Go to ChatsActivity
         Button chatsButton = (Button) findViewById(R.id.chatsButton);
         chatsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +64,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             }
         });
 
+        //Go to FriendsActivity
         Button friendsButton = (Button) findViewById(R.id.viewFriendsButton);
         friendsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +74,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             }
         });
 
+        //Set up push notifications
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null && ParseInstallation.getCurrentInstallation() != null && ParseInstallation.getCurrentInstallation().getString("userId") == null) {
 
@@ -88,28 +95,5 @@ public class HomeScreenActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(contactsServiceConnection);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home_screen, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

@@ -13,11 +13,13 @@ import com.parse.ParseUser;
  */
 public class ParseQueries {
 
+    //Get Contacts of the current user
     public static ParseQuery createContactsQuery(ParseUser currentUser) {
         ParseRelation<Contact> relation = currentUser.getRelation("contacts");
         return relation.getQuery();
     }
 
+    //Get the messages that the user sent
     public static ParseQuery createUserSenderMessagesQuery(String userPhoneNumber) {
         ParseQuery query = ParseQuery.getQuery("Message");
         query.whereEqualTo("sender", userPhoneNumber);
@@ -25,6 +27,7 @@ public class ParseQueries {
         return query;
     }
 
+    //Get the messages that were sent to the user
     public static ParseQuery createUserRecipientMessagesQuery(String userPhoneNumber) {
         ParseQuery query = ParseQuery.getQuery("Message");
         query.whereEqualTo("recipient", userPhoneNumber);
@@ -32,10 +35,12 @@ public class ParseQueries {
         return query;
     }
 
+    //Gets all the users
     public static ParseQuery createUsersQuery() {
         return ParseUser.getQuery();
     }
 
+    //Creates a push query
     public static ParseQuery createPushQuery(String tempObjectId) {
         ParseQuery query = ParseInstallation.getQuery();
         query.whereEqualTo("userId", tempObjectId);

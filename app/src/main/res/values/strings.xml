@@ -23,4 +23,5 @@
     <string name="title_activity_friends">FriendsActivity</string>
     <string name="title_activity_add_friends">AddFriendsActivity</string>
     <string name="title_activity_add_new_friends">AddNewFriendsActivity</string>
+    <string name="title_activity_speech_bubble">SpeechBubbleActivity</string>
 </resources>

@@ -2,6 +2,7 @@ package com.flutter.hatchat.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.flutter.hatchat.R;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,13 +28,15 @@ public class ChatListViewAdapter extends ArrayAdapter<Message> {
     private ChatListFilter filter;
     private List<Message> originalList;
     private List<Message> filteredList;
+    private List<Contact> contactList;
 
-    public ChatListViewAdapter(Context context, int resource, List<Message> items) {
+    public ChatListViewAdapter(Context context, int resource, List<Message> items, List<Contact> contacts) {
         super(context, resource, items);
         this.context = context;
         this.filteredList = items;
         this.originalList = new ArrayList<>();
         this.originalList.addAll(items);
+        this.contactList = contacts;
     }
 
     private class MessageViewHolder {
@@ -42,7 +46,7 @@ public class ChatListViewAdapter extends ArrayAdapter<Message> {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        MessageViewHolder holder;
+        final MessageViewHolder holder;
         Message rowItem = filteredList.get(position);
         LayoutInflater rowViewInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         if(convertView == null){
@@ -59,9 +63,20 @@ public class ChatListViewAdapter extends ArrayAdapter<Message> {
         }
 
         if (rowItem != null) {
-            //TODO do the 24 hour countdown thing...
+            //TODO do the 24 hour countdown thing... 86400000
             holder.timeText.setText(rowItem.getDate().toString());
-            holder.friendNameText.setText(rowItem.getSender());
+
+            Contact tempContact = new Contact();
+            tempContact.setPhoneNumber(rowItem.getSender());
+
+            int index = contactList.indexOf(tempContact);
+
+            if (index >= 0) {
+                holder.friendNameText.setText(contactList.get(index).getName());
+            } else {
+                holder.friendNameText.setText(rowItem.getSender());
+            }
+
             holder.recentMessageText.setText(rowItem.getMessage());
         }
 
@@ -93,7 +108,14 @@ public class ChatListViewAdapter extends ArrayAdapter<Message> {
                     String name = message.getSender().toLowerCase();
                     String messageContent = message.getMessage().toLowerCase();
 
-                    if (name.contains(prefix) || messageContent.contains(prefix)) {
+                    Contact tempContact = new Contact();
+                    tempContact.setPhoneNumber(name);
+
+                    int index = contactList.indexOf(tempContact);
+                    tempContact = contactList.get(index);
+                    String tempContactName = tempContact.getName().toLowerCase();
+
+                    if (name.contains(prefix) || messageContent.contains(prefix) || tempContactName.contains(prefix)) {
                         newList.add(message);
                     }
                 }

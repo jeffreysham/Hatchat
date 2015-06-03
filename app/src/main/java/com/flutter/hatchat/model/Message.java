@@ -1,5 +1,8 @@
 package com.flutter.hatchat.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
@@ -10,7 +13,7 @@ import java.util.Date;
  * Created by Jeffrey Sham on 5/22/2015.
  */
 @ParseClassName("Message")
-public class Message extends ParseObject implements Comparable{
+public class Message extends ParseObject implements Comparable {
     public void setMessage(String value) {
         put("message", value);
     }
@@ -55,5 +58,17 @@ public class Message extends ParseObject implements Comparable{
             return getDate().compareTo(other.getDate());
         }
         return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Message) {
+            Message tempMessage = (Message) o;
+            return getMessage().equals(tempMessage.getMessage()) &&
+                    getSender().equals(tempMessage.getSender()) &&
+                    getRecipient().equals(tempMessage.getRecipient()) &&
+                    getDate().equals(tempMessage.getDate());
+        }
+        return super.equals(o);
     }
 }

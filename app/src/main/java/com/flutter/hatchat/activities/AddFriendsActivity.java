@@ -53,6 +53,9 @@ public class AddFriendsActivity extends ActionBarActivity {
 
     private ContactsDataService contactsDataService;
 
+    /**
+     * Get/use the data service.
+     */
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -74,6 +77,8 @@ public class AddFriendsActivity extends ActionBarActivity {
         setContentView(R.layout.contact_list);
         contactList = new ArrayList<>();
         contactListView = (ListView) findViewById(R.id.contactListView);
+
+        //Search through the list
         EditText inputSearch = (EditText) findViewById(R.id.inputSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -93,6 +98,9 @@ public class AddFriendsActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * Start the service connection
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -100,6 +108,9 @@ public class AddFriendsActivity extends ActionBarActivity {
         bindService(i, contactsServiceConnection, BIND_AUTO_CREATE);
     }
 
+    /**
+     * Stop the service connection
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -107,6 +118,9 @@ public class AddFriendsActivity extends ActionBarActivity {
         finish();
     }
 
+    /**
+     * Show the contacts in the list
+     */
     public void displayContacts() {
         listViewAdapter = new ContactListViewAdapter(this, R.layout.contacts_list_item,contactRowItemList);
         contactListView.setAdapter(listViewAdapter);
@@ -119,57 +133,9 @@ public class AddFriendsActivity extends ActionBarActivity {
         });
     }
 
-    /*public void findContacts() {
-        ContentResolver cr = getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
-                null, null, null, null);
-        contactList = new ArrayList<Contact>();
-        contactRowItemList = new ArrayList<ContactRowItem>();
-        if (cur.getCount() > 0) {
-            while (cur.moveToNext()) {
-                String id = cur.getString(
-                        cur.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cur.getString(
-                        cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    //Query phone here.  Covered next
-                    Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?", new String[]{id}, null);
-                    if (pCur.moveToNext()) {
-                        // Do something with phones
-                        String number = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
-
-                        Log.i("Contact", "Name: " + name + " Number 1: " + number);
-
-                        String realPhoneNumber = "";
-
-                        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-                        try {
-                            Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(number, "US");
-                            realPhoneNumber = "" + phoneNumber.getNationalNumber();
-                        } catch (NumberParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (realPhoneNumber.length() > 0) {
-                            Contact tempContact = new Contact();
-                            tempContact.setPhoneNumber(realPhoneNumber);
-                            contactList.add(tempContact);
-                            ContactRowItem tempRowItem = new ContactRowItem(name, realPhoneNumber);
-                            contactRowItemList.add(tempRowItem);
-                        }
-                    }
-                    pCur.close();
-
-                }
-
-
-            }
-            Collections.sort(contactRowItemList);
-            displayContacts();
-        }
-    }*/
-
-
+    /**
+     * Select contacts. Add them to the contact list and update the list.
+     */
     private void onListItemClick(ListView l, View v, int position, long id) {
 
         ContactRowItem tempRowItem = (ContactRowItem)l.getItemAtPosition(position);
@@ -177,13 +143,14 @@ public class AddFriendsActivity extends ActionBarActivity {
         boolean selected = !tempRowItem.getSelected();
 
         tempRowItem.setSelected(selected);
-        //listViewAdapter.notifyDataSetChanged();
+
         updateView(v, selected);
 
         Contact tempContact = new Contact();
         tempContact.setPhoneNumber(tempRowItem.getPhoneNumber());
         tempContact.setName(tempRowItem.getName());
         tempContact.setIsMessaging(false);
+        tempContact.saveInBackground();
         if (selected) {
             contactList.add(tempContact);
         } else {
@@ -194,6 +161,9 @@ public class AddFriendsActivity extends ActionBarActivity {
         view.setText(String.valueOf(contactListView.getCheckedItemCount()));
     }
 
+    /**
+     * This updates the list to show that the contact was selected/unselected
+     */
     private void updateView(View view, boolean selected) {
         ImageView imageView = (ImageView) view.findViewById(R.id.itemClickedImageView);
         if (selected) {
@@ -247,6 +217,9 @@ public class AddFriendsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Saves the contacts. Needs at least 15 contacts initially
+     */
     public void saveContacts(){
         if (contactListView.getCheckedItemCount() >= 15) {
             ParseUser currentUser = ParseUser.getCurrentUser();
