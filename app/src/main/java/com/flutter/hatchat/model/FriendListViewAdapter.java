@@ -56,7 +56,7 @@ public class FriendListViewAdapter extends ArrayAdapter<Contact>{
         }
         if (rowItem != null) {
             holder.friendNameText.setText(rowItem.getName());
-            holder.removeFriendImageView.setImageResource(R.mipmap.ic_launcher);
+            holder.removeFriendImageView.setImageResource(R.drawable.hatchat_icon);
         }
 
         return convertView;

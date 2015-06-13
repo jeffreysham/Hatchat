@@ -28,7 +28,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:id="@+id/contactHasAppImageView"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/hatchat_icon"
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@+id/itemClickedImageView"/>
 
@@ -36,7 +36,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:id="@+id/itemClickedImageView"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/hatchat_icon"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"/>
 

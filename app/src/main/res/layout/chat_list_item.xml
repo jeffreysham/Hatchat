@@ -10,21 +10,30 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="24:00"
-            android:id="@+id/timeTextView"
-            android:layout_marginRight="10dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Jeffrey Sham"
-            android:id="@+id/chatNameTextView" />
+            android:text="24:00"
+            android:gravity="center"
+            android:id="@+id/timeTextView"
+            android:layout_marginRight="10dp"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Jeffrey Sham"
+                android:id="@+id/chatNameTextView" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Hello World"
+                android:id="@+id/chatMessageTextView" />
+        </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello World"
-        android:id="@+id/chatMessageTextView" />
 </LinearLayout>

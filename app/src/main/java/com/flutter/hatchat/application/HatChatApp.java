@@ -34,7 +34,7 @@ public class HatChatApp extends Application {
         super.onCreate();
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new TwitterCore(authConfig), new Digits());
-        Parse.enableLocalDatastore(this);
+        //Parse.enableLocalDatastore(this);
 
         ParseObject.registerSubclass(Contact.class);
         ParseUser.registerSubclass(User.class);

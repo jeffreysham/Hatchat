@@ -1,11 +1,16 @@
 package com.flutter.hatchat.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.provider.ContactsContract;
@@ -41,12 +46,26 @@ public class SplashScreenActivity extends ActionBarActivity {
 
     private ContactsDataService contactsDataService;
     private List<ContactRowItem> contactRowItemList;
+    private Context context = this;
 
     ServiceConnection contactsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
             contactsDataService = binder.getService();
+
+            if (!isNetworkAvailable()) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                alert.setTitle("No internet access")
+                        .setMessage("Please turn on internet.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                alert.create().show();
+            }
 
             //Get Contact Data and put in the Service
             FindContactsInBackground f = new FindContactsInBackground();
@@ -154,6 +173,13 @@ public class SplashScreenActivity extends ActionBarActivity {
             Intent intent = new Intent(this, HomeScreenActivity.class);
             startActivity(intent);
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

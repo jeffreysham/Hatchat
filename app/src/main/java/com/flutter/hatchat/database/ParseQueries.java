@@ -16,7 +16,9 @@ public class ParseQueries {
     //Get Contacts of the current user
     public static ParseQuery createContactsQuery(ParseUser currentUser) {
         ParseRelation<Contact> relation = currentUser.getRelation("contacts");
-        return relation.getQuery();
+        ParseQuery query = relation.getQuery();
+        query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+        return query;
     }
 
     //Get the messages that the user sent
@@ -24,6 +26,7 @@ public class ParseQueries {
         ParseQuery query = ParseQuery.getQuery("Message");
         query.whereEqualTo("sender", userPhoneNumber);
         query.orderByAscending("createdAt");
+        query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
         return query;
     }
 
@@ -32,18 +35,22 @@ public class ParseQueries {
         ParseQuery query = ParseQuery.getQuery("Message");
         query.whereEqualTo("recipient", userPhoneNumber);
         query.orderByAscending("createdAt");
+        query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
         return query;
     }
 
     //Gets all the users
     public static ParseQuery createUsersQuery() {
-        return ParseUser.getQuery();
+        ParseQuery query = ParseUser.getQuery();
+        query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+        return query;
     }
 
     //Creates a push query
     public static ParseQuery createPushQuery(String tempObjectId) {
         ParseQuery query = ParseInstallation.getQuery();
         query.whereEqualTo("userId", tempObjectId);
+        query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
         return query;
     }
 

@@ -3,52 +3,52 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
-    android:background="@color/background_material_dark">
+    android:background="#ff00a14b">
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/write"
         android:textSize="25sp"
         android:id="@+id/writeNewMessageButton"
-        android:gravity="center_horizontal|center_vertical|start"
+        android:gravity="center_horizontal|center_vertical|center"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
         android:layout_weight="0.10"
-        android:drawableRight="@mipmap/ic_launcher"
-        android:background="@color/background_material_light"/>
+        android:drawableLeft="@drawable/new_chat_icon"
+        android:background="#ff00a14b"/>
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/chats"
         android:textSize="25sp"
         android:id="@+id/chatsButton"
-        android:gravity="center_horizontal|center_vertical|start"
+        android:gravity="center_horizontal|center_vertical|center"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.10"
         android:layout_marginTop="30dp"
-        android:drawableRight="@mipmap/ic_launcher"
-        android:background="@color/background_material_light"/>
+        android:layout_weight="0.10"
+        android:drawableLeft="@drawable/chats_icon"
+        android:background="#ff00a14b"/>
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/friends"
         android:textSize="25sp"
         android:id="@+id/viewFriendsButton"
-        android:gravity="center_horizontal|center_vertical|start"
+        android:gravity="center_horizontal|center_vertical|center"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.10"
         android:layout_marginTop="30dp"
-        android:drawableRight="@mipmap/ic_launcher"
-        android:background="@color/background_material_light"/>
+        android:layout_weight="0.10"
+        android:drawableLeft="@drawable/contacts_icon"
+        android:background="#ff00a14b"/>
 
     <ImageView
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:id="@+id/imageView"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.40"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/hatchat_icon" />
 </LinearLayout>

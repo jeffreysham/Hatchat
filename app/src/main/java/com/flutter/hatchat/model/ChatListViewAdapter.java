@@ -63,8 +63,9 @@ public class ChatListViewAdapter extends ArrayAdapter<Message> {
         }
 
         if (rowItem != null) {
-            //TODO do the 24 hour countdown thing... 86400000
-            holder.timeText.setText(rowItem.getDate().toString());
+            //TODO do the 24 hour countdown thing...
+
+            holder.timeText.setText(rowItem.getDate().getHours() + ":" + (rowItem.getDate().getMinutes()));
 
             Contact tempContact = new Contact();
             tempContact.setPhoneNumber(rowItem.getSender());

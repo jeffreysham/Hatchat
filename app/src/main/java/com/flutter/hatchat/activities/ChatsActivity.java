@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -81,8 +83,10 @@ public class ChatsActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TODO Test Messaging with more than 1 phone
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_list);
+
         chatListView = (ListView) findViewById(R.id.chat_list);
 
         //Search through list
@@ -143,9 +147,12 @@ public class ChatsActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        getUserSenderMessages(currentUser.getString("phoneNumber"));
-        listViewAdapter.notifyDataSetChanged();
+        if (contactsDataService != null) {
+            ParseUser currentUser = ParseUser.getCurrentUser();
+            getUserSenderMessages(currentUser.getString("phoneNumber"));
+            listViewAdapter.notifyDataSetChanged();
+        }
+
     }
 
     /**
@@ -246,5 +253,28 @@ public class ChatsActivity extends ActionBarActivity {
         contactsDataService.storeUserSpecificMessages(userSpecificMessageList);
         Intent intent = new Intent(this, SpeechBubbleActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_chats, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.refresh) {
+            onResume();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

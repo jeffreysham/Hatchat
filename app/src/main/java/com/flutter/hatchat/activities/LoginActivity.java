@@ -73,7 +73,9 @@ public class LoginActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         //Uses Digits in order to do phone number authentication
+        //TODO: Test to see if the colors are correct for authentication
         final DigitsAuthButton digitsAuthButton = (DigitsAuthButton) findViewById(R.id.auth_button);
+        digitsAuthButton.setAuthTheme(R.style.CustomDigitsTheme);
         digitsAuthButton.setCallback(new AuthCallback() {
             @Override
             public void success(DigitsSession digitsSession, String phoneNumber) {

@@ -55,10 +55,10 @@ public class SpeechBubbleListViewAdapter extends ArrayAdapter<Message> {
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.messageText.getLayoutParams();
         if (rowItem.getSender().equals(phoneNumber)) {
-            holder.messageText.setBackgroundResource(R.drawable.speech_bubble_green);
+            holder.messageText.setBackgroundResource(R.drawable.chat_bubble_icon);
             layoutParams.gravity = Gravity.RIGHT;
         } else {
-            holder.messageText.setBackgroundResource(R.drawable.speech_bubble_orange);
+            holder.messageText.setBackgroundResource(R.drawable.chat_bubble_icon);
             layoutParams.gravity = Gravity.LEFT;
         }
 
