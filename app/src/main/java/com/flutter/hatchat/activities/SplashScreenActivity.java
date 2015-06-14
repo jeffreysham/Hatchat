@@ -62,14 +62,15 @@ public class SplashScreenActivity extends ActionBarActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
+                                finish();
                             }
                         });
                 alert.create().show();
+            } else {
+                //Get Contact Data and put in the Service
+                FindContactsInBackground f = new FindContactsInBackground();
+                f.execute();
             }
-
-            //Get Contact Data and put in the Service
-            FindContactsInBackground f = new FindContactsInBackground();
-            f.execute();
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -90,7 +91,7 @@ public class SplashScreenActivity extends ActionBarActivity {
         query.findInBackground(new FindCallback<Message>() {
             @Override
             public void done(List<Message> list, ParseException e) {
-                if (list.size() > 0) {
+                if (list != null && list.size() > 0) {
                     contactsDataService.storeUserSenderMessages(list);
                 }
                 getUserRecipientMessages(phoneNumber);
@@ -105,7 +106,7 @@ public class SplashScreenActivity extends ActionBarActivity {
         query.findInBackground(new FindCallback<Message>() {
             @Override
             public void done(List<Message> list, ParseException e) {
-                if (list.size() > 0) {
+                if (list != null && list.size() > 0) {
                     contactsDataService.storeUserRecipientMessages(list);
                 }
                 finishSplashActivity();
