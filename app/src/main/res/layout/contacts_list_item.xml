@@ -5,7 +5,7 @@
     android:padding="5dp">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/contactNameTextView"
         android:layout_alignParentTop="true"
@@ -20,23 +20,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/contactNumberTextView"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/contactHasAppImageView"
         android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/itemClickedImageView"
         android:textSize="20dp" />
 
     <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:id="@+id/contactHasAppImageView"
-        android:src="@drawable/hatchat_icon"
-        android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@+id/itemClickedImageView"/>
-
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
         android:id="@+id/itemClickedImageView"
-        android:src="@drawable/hatchat_icon"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"/>
 

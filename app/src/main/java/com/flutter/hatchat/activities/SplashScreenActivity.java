@@ -1,42 +1,27 @@
 package com.flutter.hatchat.activities;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.flutter.hatchat.R;
 import com.flutter.hatchat.database.ContactsDataService;
-import com.flutter.hatchat.database.ParseQueries;
+import com.flutter.hatchat.database.DatabaseHandler;
 import com.flutter.hatchat.model.Contact;
 import com.flutter.hatchat.model.ContactRowItem;
-import com.flutter.hatchat.model.Message;
-import com.flutter.hatchat.model.User;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseRelation;
-import com.parse.ParseUser;
+import com.parse.ParseAnalytics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,23 +39,27 @@ public class SplashScreenActivity extends ActionBarActivity {
             ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
             contactsDataService = binder.getService();
 
-            if (!isNetworkAvailable()) {
+            //Get Contact Data and put in the Service
+            FindContactsInBackground f = new FindContactsInBackground();
+            f.execute();
+            /*if (!isNetworkAvailable()) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(context);
                 alert.setTitle("No internet access")
-                        .setMessage("Please turn on internet.")
+                        .setMessage("Please turn on internet for better experience.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
-                                finish();
                             }
                         });
                 alert.create().show();
+                FindContactsInBackground f = new FindContactsInBackground();
+                f.execute();
             } else {
                 //Get Contact Data and put in the Service
                 FindContactsInBackground f = new FindContactsInBackground();
                 f.execute();
-            }
+            }*/
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -83,105 +72,62 @@ public class SplashScreenActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        ParseAnalytics.trackAppOpenedInBackground(getIntent());
     }
 
-    //Gets the messages sent by the user
-    public void getUserSenderMessages(final String phoneNumber) {
-        ParseQuery<Message> query = ParseQueries.createUserSenderMessagesQuery(phoneNumber);
-        query.findInBackground(new FindCallback<Message>() {
-            @Override
-            public void done(List<Message> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    contactsDataService.storeUserSenderMessages(list);
-                }
-                getUserRecipientMessages(phoneNumber);
+    public void getDataFromDatabase() {
+        DatabaseHandler databaseHandler = new DatabaseHandler(this);
+        int contactCount = 0;
+        try {
+            contactCount = databaseHandler.getAllContacts().size();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        if (contactCount != 0) {
+            List<Contact> contactList = databaseHandler.getAllContacts();
+            for (int i = 0; i < contactRowItemList.size(); i++) {
+                Contact tempContact = new Contact();
+                ContactRowItem item = contactRowItemList.get(i);
+                tempContact.setPhoneNumber(item.getPhoneNumber());
+
+                int index = contactList.indexOf(tempContact);
+
+                if (index > -1) {
+                    item.setSelected(true);
+                }
             }
-        });
-    }
-
-    //Gets the messages that are sent to the user
-    public void getUserRecipientMessages(String phoneNumber) {
-        ParseQuery<Message> query = ParseQueries.createUserRecipientMessagesQuery(phoneNumber);
-        query.findInBackground(new FindCallback<Message>() {
-            @Override
-            public void done(List<Message> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    contactsDataService.storeUserRecipientMessages(list);
-                }
-                finishSplashActivity();
-            }
-        });
-    }
-
-    //Gets the contacts that the user selected to randomly message
-    public void getDataFromServer() {
-
-        final ParseUser currentUser = ParseUser.getCurrentUser();
-        Log.i("Tag", "In getDataFromServer");
-
-        if (currentUser != null) {
-
-            ParseQuery relationQuery = ParseQueries.createContactsQuery(currentUser);
-
-            relationQuery.findInBackground(new FindCallback<Contact>() {
-                @Override
-                public void done(List<Contact> list, ParseException e) {
-                    Log.i("Tag", "In getDataFromServer:done()");
-                    if (list != null && list.size() > 0) {
-
-                        //Sets up the contact and contact row item information
-                        for (int i = 0; i < contactRowItemList.size(); i++) {
-                            Contact tempContact = new Contact();
-                            ContactRowItem item = contactRowItemList.get(i);
-                            tempContact.setPhoneNumber(item.getPhoneNumber());
-
-                            int index = list.indexOf(tempContact);
-
-                            if (index > -1) {
-                                item.setSelected(true);
-                                Contact theContact = list.get(index);
-                                theContact.setHasApp(item.getHasApp());
-                                theContact.saveInBackground();
-                            }
-                        }
-                        Collections.sort(list);
-                        contactsDataService.storeContacts(list);
-                    }
-
-                    contactsDataService.storeContactRowItems(contactRowItemList);
-                    getUserSenderMessages(currentUser.getString("phoneNumber"));
-                }
-            });
-
-
+            Collections.sort(contactList);
+            contactsDataService.storeContacts(contactList);
+            contactsDataService.storeContactRowItems(contactRowItemList);
+            finishSplashActivity(true);
         } else {
             contactsDataService.storeContactRowItems(contactRowItemList);
-            finishSplashActivity();
+            finishSplashActivity(false);
         }
+
 
     }
 
     //Decides where to go after the splash activity
-    public void finishSplashActivity() {
-        //Go to Login Activity or go to main screen
-        ParseUser currentUser = ParseUser.getCurrentUser();
+    public void finishSplashActivity(boolean goToHomeScreen) {
 
-        if (currentUser == null) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        } else {
+        if (goToHomeScreen) {
             Intent intent = new Intent(this, HomeScreenActivity.class);
             startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, AddFriendsActivity.class);
+            startActivity(intent);
         }
+
     }
 
-    private boolean isNetworkAvailable() {
+    /*private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
+    }*/
 
     @Override
     protected void onStart() {
@@ -193,6 +139,7 @@ public class SplashScreenActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.i("Stop", "In Splash: onStop()");
         unbindService(contactsServiceConnection);
         finish();
     }
@@ -206,7 +153,8 @@ public class SplashScreenActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            findUsers();
+            //findUsers();
+            getDataFromDatabase();
         }
 
         @Override
@@ -240,7 +188,7 @@ public class SplashScreenActivity extends ActionBarActivity {
                     Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
                     if (pCur.moveToNext()) {
                         // Do something with phones
-                        String number = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
+                        String number = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         
                         String realPhoneNumber = "";
 
@@ -264,35 +212,5 @@ public class SplashScreenActivity extends ActionBarActivity {
             }
         }
         cur.close();
-    }
-
-    public void findUsers() {
-        ParseQuery query = ParseQueries.createUsersQuery();
-        Log.i("Tag", "In findUsers");
-        query.findInBackground(new FindCallback() {
-            @Override
-            public void done(List list, ParseException e) {
-
-            }
-
-            @Override
-            public void done(Object o, Throwable throwable) {
-
-                List list = (List) o;
-                if (o != null && list.size() > 0) {
-                    for (int i = 0; i < contactRowItemList.size(); i++) {
-                        User tempUser = new User();
-                        tempUser.setPhoneNumber(contactRowItemList.get(i).getPhoneNumber());
-                        if (list.contains(tempUser)) {
-                            contactRowItemList.get(i).setHasApp(true);
-                        }
-                    }
-                }
-
-                //Get Data from server
-                getDataFromServer();
-
-            }
-        });
     }
 }

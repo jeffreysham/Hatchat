@@ -1,7 +1,9 @@
 package com.flutter.hatchat.activities;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -10,22 +12,22 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.flutter.hatchat.R;
 import com.flutter.hatchat.database.ContactsDataService;
+import com.flutter.hatchat.database.DatabaseHandler;
 import com.flutter.hatchat.model.Contact;
 import com.flutter.hatchat.model.ContactRowItem;
 import com.flutter.hatchat.model.FriendListViewAdapter;
-import com.flutter.hatchat.model.User;
-import com.parse.ParseRelation;
-import com.parse.ParseUser;
+import com.parse.ParseAnalytics;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +39,8 @@ public class FriendsActivity extends ActionBarActivity {
     private List<ContactRowItem> contactRowItemList;
     private ListView friendsListView;
     private FriendListViewAdapter listViewAdapter;
+    private Context context = this;
+    private DatabaseHandler databaseHandler;
 
     /**
      * Get/use the data service
@@ -48,6 +52,7 @@ public class FriendsActivity extends ActionBarActivity {
             contactsDataService = binder.getService();
             friendsList = contactsDataService.getContactList();
             contactRowItemList = contactsDataService.getContactRowItemList();
+            databaseHandler = new DatabaseHandler(context);
             displayFriends();
         }
         @Override
@@ -82,6 +87,7 @@ public class FriendsActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.i("Stop", "In Friends: onStop()");
         unbindService(contactsServiceConnection);
     }
 
@@ -109,6 +115,20 @@ public class FriendsActivity extends ActionBarActivity {
 
             }
         });
+
+        ImageButton imageButton = (ImageButton) findViewById(R.id.imageButton);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, AddNewFriendsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     /**
@@ -156,15 +176,13 @@ public class FriendsActivity extends ActionBarActivity {
      * Removes the contact from user's relation
      */
     private void removeContact(Contact theContact) {
-        friendsList.remove(theContact);
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        ParseRelation relation = currentUser.getRelation("contacts");
-        relation.remove(theContact);
-        currentUser.saveInBackground();
-        listViewAdapter.notifyDataSetChanged();
-
+        //TODO
+        databaseHandler.deleteContact(theContact);
         ContactRowItem tempItem = contactRowItemList.get(contactRowItemList.indexOf(theContact));
         tempItem.setSelected(false);
+        friendsList.remove(theContact);
+        listViewAdapter.notifyDataSetChanged();
+        ParseAnalytics.trackEventInBackground("friendRemoved");
     }
 
     @Override
@@ -180,13 +198,8 @@ public class FriendsActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        finish();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.addFriends) {
-            Intent intent = new Intent(this, AddNewFriendsActivity.class);
-            startActivity(intent);
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

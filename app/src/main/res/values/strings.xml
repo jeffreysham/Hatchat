@@ -7,6 +7,7 @@
     <string name="chats">Your chats</string>
     <string name="friends">Contacts</string>
     <string name="send">Send</string>
+    <string name="call">Call</string>
     <string name="hint">Write a message...</string>
     <string name="welcome">Welcome to Hatchat!\nTo start, please press\nthe button below.</string>
     <string name="add_friends">Please select at least 15 friends to add to your Hat!</string>
@@ -25,4 +26,9 @@
     <string name="title_activity_add_friends">AddFriendsActivity</string>
     <string name="title_activity_add_new_friends">AddNewFriendsActivity</string>
     <string name="title_activity_speech_bubble">SpeechBubbleActivity</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

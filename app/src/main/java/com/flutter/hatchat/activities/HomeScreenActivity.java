@@ -1,5 +1,8 @@
 package com.flutter.hatchat.activities;
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -7,15 +10,12 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.flutter.hatchat.R;
 import com.flutter.hatchat.database.ContactsDataService;
-import com.parse.ParseInstallation;
-import com.parse.ParseUser;
 
 public class HomeScreenActivity extends ActionBarActivity {
 
@@ -49,18 +49,8 @@ public class HomeScreenActivity extends ActionBarActivity {
         writeNewMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, WriteNewMessageActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        //Go to ChatsActivity
-        Button chatsButton = (Button) findViewById(R.id.chatsButton);
-        chatsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ChatsActivity.class);
-                startActivity(intent);
+                DialogFragment newFragment = WriteNewMessageFragment.newInstance();
+                newFragment.show(getFragmentManager(), "dialog");
             }
         });
 
@@ -74,14 +64,6 @@ public class HomeScreenActivity extends ActionBarActivity {
             }
         });
 
-        //Set up push notifications
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null && ParseInstallation.getCurrentInstallation() != null && ParseInstallation.getCurrentInstallation().getString("userId") == null) {
-
-            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-            installation.put("userId", currentUser.getObjectId());
-            installation.saveInBackground();
-        }
     }
 
     @Override
@@ -94,6 +76,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.i("Stop", "In Home: onDestroy()");
         unbindService(contactsServiceConnection);
     }
 }

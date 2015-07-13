@@ -1,7 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.flutter.hatchat.activities.ChatsActivity">
-    <item android:id="@+id/refresh" android:title="@string/refresh"
-        android:orderInCategory="100" app:showAsAction="never" />
-</menu>

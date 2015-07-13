@@ -9,8 +9,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -21,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,17 +32,11 @@ import android.widget.Toast;
 
 import com.flutter.hatchat.R;
 import com.flutter.hatchat.database.ContactsDataService;
+import com.flutter.hatchat.database.DatabaseHandler;
 import com.flutter.hatchat.model.Contact;
 import com.flutter.hatchat.model.ContactListViewAdapter;
 import com.flutter.hatchat.model.ContactRowItem;
-import com.flutter.hatchat.model.User;
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
-import com.parse.ParseRelation;
-import com.parse.ParseUser;
-
-import org.w3c.dom.Comment;
+import com.parse.ParseObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,8 +48,9 @@ public class AddFriendsActivity extends ActionBarActivity {
     private List<Contact> contactList;
     private ContactListViewAdapter listViewAdapter;
     private ListView contactListView;
-
+    private DatabaseHandler database;
     private ContactsDataService contactsDataService;
+    private Context context = this;
 
     /**
      * Get/use the data service.
@@ -62,6 +61,7 @@ public class AddFriendsActivity extends ActionBarActivity {
             ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
             contactsDataService = binder.getService();
             contactRowItemList = contactsDataService.getContactRowItemList();
+            database = new DatabaseHandler(context);
             displayContacts();
         }
         @Override
@@ -96,6 +96,37 @@ public class AddFriendsActivity extends ActionBarActivity {
 
             }
         });
+
+        ImageButton imageButton = (ImageButton) findViewById(R.id.imageButton);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                alertDialog.setTitle("Add Contacts");
+                alertDialog.setMessage("Are you sure you want to add these contacts?")
+                        .setCancelable(false)
+                        .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveContacts();
+                            }
+
+                        })
+                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog dialog = alertDialog.create();
+                dialog.show();
+            }
+        });
+
+        if (isNetworkAvailable()) {
+            ParseObject object = new ParseObject("user");
+            object.saveEventually();
+        }
     }
 
     /**
@@ -114,6 +145,7 @@ public class AddFriendsActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.i("Stop", "In AddFriends: onStop()");
         unbindService(contactsServiceConnection);
         finish();
     }
@@ -137,20 +169,15 @@ public class AddFriendsActivity extends ActionBarActivity {
      * Select contacts. Add them to the contact list and update the list.
      */
     private void onListItemClick(ListView l, View v, int position, long id) {
-
         ContactRowItem tempRowItem = (ContactRowItem)l.getItemAtPosition(position);
-
         boolean selected = !tempRowItem.getSelected();
 
         tempRowItem.setSelected(selected);
 
         updateView(v, selected);
 
-        Contact tempContact = new Contact();
-        tempContact.setPhoneNumber(tempRowItem.getPhoneNumber());
-        tempContact.setName(tempRowItem.getName());
-        tempContact.setIsMessaging(false);
-        tempContact.saveInBackground();
+        Contact tempContact = new Contact(tempRowItem.getPhoneNumber(), tempRowItem.getName());
+
         if (selected) {
             contactList.add(tempContact);
         } else {
@@ -168,53 +195,11 @@ public class AddFriendsActivity extends ActionBarActivity {
         ImageView imageView = (ImageView) view.findViewById(R.id.itemClickedImageView);
         if (selected) {
             //Selected Picture
-            imageView.setImageResource(R.mipmap.ic_launcher);
+            imageView.setImageResource(R.drawable.hatchat_icon);
         } else {
             //Did not select picture
-            imageView.setImageResource(R.color.abc_background_cache_hint_selector_material_light);
+            imageView.setImageResource(0);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_friends, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.done) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setTitle("Add Contacts");
-            alertDialog.setMessage("Are you sure you want to add these contacts?")
-                    .setCancelable(false)
-                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            saveContacts();
-                        }
-
-                    })
-                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog dialog = alertDialog.create();
-            dialog.show();
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -222,20 +207,18 @@ public class AddFriendsActivity extends ActionBarActivity {
      */
     public void saveContacts(){
         if (contactListView.getCheckedItemCount() >= 15) {
-            ParseUser currentUser = ParseUser.getCurrentUser();
-
+            Collections.sort(contactList);
             for (int i = 0; i < contactList.size(); i++) {
                 Contact contact = contactList.get(i);
-                ParseRelation<Contact> relation = currentUser.getRelation("contacts");
-                relation.add(contact);
-                currentUser.saveInBackground();
+                database.addContact(contact);
             }
 
-            //currentUser.saveInBackground();
             Toast.makeText(this, "Saved Contacts", Toast.LENGTH_SHORT).show();
 
+            contactsDataService.storeContacts(contactList);
             contactsDataService.storeContactRowItems(contactRowItemList);
             goToHomeScreen();
+
         } else {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("Contacts");
@@ -250,7 +233,6 @@ public class AddFriendsActivity extends ActionBarActivity {
                     });
             AlertDialog dialog = alertDialog.create();
             dialog.show();
-
         }
 
     }
@@ -258,5 +240,12 @@ public class AddFriendsActivity extends ActionBarActivity {
     public void goToHomeScreen(){
         Intent intent = new Intent(this, HomeScreenActivity.class);
         startActivity(intent);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

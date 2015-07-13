@@ -2,6 +2,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.flutter.hatchat.activities.FriendsActivity">
-    <item android:id="@+id/addFriends" android:title="@string/add_new_friends"
-        android:orderInCategory="100" app:showAsAction="never" />
 </menu>
