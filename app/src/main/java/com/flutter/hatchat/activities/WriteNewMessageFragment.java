@@ -68,6 +68,7 @@ public class WriteNewMessageFragment extends DialogFragment {
         return rootView;
     }
 
+    //Calls a random user
     public void callUser() {
         if (contactList.size() > 0) {
             Random ran = new Random();
@@ -108,8 +109,7 @@ public class WriteNewMessageFragment extends DialogFragment {
 
     }
 
-    //Sends the message to the server and to the contact. Also sends a push notification
-    //if the user has the application
+    //Sends the message to the contact.
     public void sendMessage() {
 
         if (contactList.size() > 0) {

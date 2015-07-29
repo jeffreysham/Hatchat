@@ -65,8 +65,14 @@ public class WriteNewMessageActivity extends ActionBarActivity {
                 callUser();
             }
         });
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
+    //Calls a random user
     public void callUser() {
         if (contactList.size() > 0) {
             Random ran = new Random();
@@ -106,8 +112,7 @@ public class WriteNewMessageActivity extends ActionBarActivity {
 
     }
 
-    //Sends the message to the server and to the contact. Also sends a push notification
-    //if the user has the application
+    //Sends the message to the contact
     public void sendMessage() {
 
         if (contactList.size() > 0) {
@@ -162,5 +167,24 @@ public class WriteNewMessageActivity extends ActionBarActivity {
             dialog.show();
 
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_new_message, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        finish();
+
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -145,7 +145,7 @@ public class AddFriendsActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i("Stop", "In AddFriends: onStop()");
+        AddFriendsActivity.this.listViewAdapter.getFilter().filter("");
         unbindService(contactsServiceConnection);
         finish();
     }
@@ -214,8 +214,6 @@ public class AddFriendsActivity extends ActionBarActivity {
             }
 
             Toast.makeText(this, "Saved Contacts", Toast.LENGTH_SHORT).show();
-
-            contactsDataService.storeContacts(contactList);
             contactsDataService.storeContactRowItems(contactRowItemList);
             goToHomeScreen();
 

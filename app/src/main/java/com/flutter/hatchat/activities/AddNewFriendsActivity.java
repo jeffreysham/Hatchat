@@ -31,7 +31,6 @@ import java.util.List;
 public class AddNewFriendsActivity extends ActionBarActivity {
 
     private List<ContactRowItem> contactRowItemList;
-    private List<Contact> contactList;
     private ContactListViewAdapter listViewAdapter;
     private ListView contactListView;
     private DatabaseHandler databaseHandler;
@@ -47,7 +46,6 @@ public class AddNewFriendsActivity extends ActionBarActivity {
             ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
             contactsDataService = binder.getService();
             contactRowItemList = contactsDataService.getContactRowItemList();
-            contactList = contactsDataService.getContactList();
             databaseHandler = new DatabaseHandler(context);
             displayContacts();
         }
@@ -68,6 +66,7 @@ public class AddNewFriendsActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        AddNewFriendsActivity.this.listViewAdapter.getFilter().filter("");
         Log.i("Stop", "In AddNewFriends: onStop()");
         unbindService(contactsServiceConnection);
     }
@@ -134,10 +133,8 @@ public class AddNewFriendsActivity extends ActionBarActivity {
         Contact tempContact = new Contact(tempRowItem.getPhoneNumber(), tempRowItem.getName());
 
         if (selected) {
-            contactList.add(tempContact);
             databaseHandler.addContact(tempContact);
         } else {
-            contactList.remove(tempContact);
             databaseHandler.deleteContact(tempContact);
         }
 

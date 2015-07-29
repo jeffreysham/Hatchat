@@ -97,8 +97,7 @@ public class SplashScreenActivity extends ActionBarActivity {
                     item.setSelected(true);
                 }
             }
-            Collections.sort(contactList);
-            contactsDataService.storeContacts(contactList);
+
             contactsDataService.storeContactRowItems(contactRowItemList);
             finishSplashActivity(true);
         } else {

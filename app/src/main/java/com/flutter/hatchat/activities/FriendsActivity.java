@@ -41,6 +41,7 @@ public class FriendsActivity extends ActionBarActivity {
     private FriendListViewAdapter listViewAdapter;
     private Context context = this;
     private DatabaseHandler databaseHandler;
+    private EditText inputSearch;
 
     /**
      * Get/use the data service
@@ -50,9 +51,10 @@ public class FriendsActivity extends ActionBarActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
             contactsDataService = binder.getService();
-            friendsList = contactsDataService.getContactList();
             contactRowItemList = contactsDataService.getContactRowItemList();
             databaseHandler = new DatabaseHandler(context);
+            friendsList = databaseHandler.getAllContacts();
+            Collections.sort(friendsList);
             displayFriends();
         }
         @Override
@@ -75,7 +77,11 @@ public class FriendsActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i("test", "in on Resume of Friends Activity");
+        Log.i("test", "friendsList = " + friendsList);
+        Log.i("test", "listViewAdapter = " + listViewAdapter);
         if (friendsList != null && listViewAdapter != null) {
+            friendsList = databaseHandler.getAllContacts();
             if (friendsList.size() > 1) {
                 Collections.sort(friendsList);
             }
@@ -87,6 +93,7 @@ public class FriendsActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        FriendsActivity.this.listViewAdapter.getFilter().filter("");
         Log.i("Stop", "In Friends: onStop()");
         unbindService(contactsServiceConnection);
     }
@@ -98,7 +105,7 @@ public class FriendsActivity extends ActionBarActivity {
         friendsListView = (ListView) findViewById(R.id.friendsListView);
 
         //Search through list
-        EditText inputSearch = (EditText) findViewById(R.id.inputSearch);
+        inputSearch = (EditText) findViewById(R.id.inputSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -173,14 +180,18 @@ public class FriendsActivity extends ActionBarActivity {
     }
 
     /**
-     * Removes the contact from user's relation
+     * Removes the contact from the database
      */
     private void removeContact(Contact theContact) {
-        //TODO
         databaseHandler.deleteContact(theContact);
         ContactRowItem tempItem = contactRowItemList.get(contactRowItemList.indexOf(theContact));
         tempItem.setSelected(false);
         friendsList.remove(theContact);
+
+        List<Contact> tempList = databaseHandler.getAllContacts();
+        Collections.sort(tempList);
+        listViewAdapter.updateLists(friendsList, tempList);
+
         listViewAdapter.notifyDataSetChanged();
         ParseAnalytics.trackEventInBackground("friendRemoved");
     }

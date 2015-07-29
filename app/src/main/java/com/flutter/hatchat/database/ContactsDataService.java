@@ -18,13 +18,11 @@ public class ContactsDataService extends Service{
     private IBinder binder = new ContactBinder();
 
     List<ContactRowItem> contactRowItemList;
-    List<Contact> contactList;
 
     @Override
     public void onCreate() {
         super.onCreate();
         contactRowItemList = new ArrayList<ContactRowItem>();
-        contactList = new ArrayList<Contact>();
     }
 
     @Override
@@ -44,13 +42,5 @@ public class ContactsDataService extends Service{
 
     public List<ContactRowItem> getContactRowItemList() {
         return contactRowItemList;
-    }
-
-    public void storeContacts(List<Contact> contacts) {
-        this.contactList = contacts;
-    }
-
-    public List<Contact> getContactList(){
-        return contactList;
     }
 }

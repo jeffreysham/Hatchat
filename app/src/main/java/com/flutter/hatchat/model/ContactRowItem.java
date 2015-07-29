@@ -7,13 +7,11 @@ public class ContactRowItem implements Comparable{
     private String phoneNumber;
     private String name;
     private boolean selected;
-    private boolean hasApp;
 
     public ContactRowItem (String name, String phoneNumber) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.selected = false;
-        this.hasApp = false;
     }
 
     public String getPhoneNumber() {
@@ -30,14 +28,6 @@ public class ContactRowItem implements Comparable{
 
     public boolean getSelected() {
         return selected;
-    }
-
-    public boolean getHasApp() {
-        return hasApp;
-    }
-
-    public void setHasApp(boolean hasApp) {
-        this.hasApp = hasApp;
     }
 
     @Override

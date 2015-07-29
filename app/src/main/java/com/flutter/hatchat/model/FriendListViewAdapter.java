@@ -38,6 +38,11 @@ public class FriendListViewAdapter extends ArrayAdapter<Contact>{
         ImageView removeFriendImageView;
     }
 
+    public void updateLists(List<Contact> filteredList, List<Contact> originalList) {
+        this.filteredList = filteredList;
+        this.originalList = originalList;
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         FriendViewHolder holder;
         Contact rowItem = filteredList.get(position);

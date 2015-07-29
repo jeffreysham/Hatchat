@@ -61,36 +61,5 @@ public class Contact implements Comparable{
         }
         return 0;
     }
-    /*public String getPhoneNumber() {
-        return getString("phoneNumber");
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        put("phoneNumber", phoneNumber);
-    }
-
-    public String getName() {
-        return getString("name");
-    }
-
-    public void setName(String name) {
-        put("name", name);
-    }
-
-    public boolean getIsMessaging() {
-        return getBoolean("isMessaging");
-    }
-
-    public void setIsMessaging(boolean isMessaging) {
-        put("isMessaging", isMessaging);
-    }
-
-    public boolean getHasApp() {
-        return getBoolean("hasApp");
-    }
-
-    public void setHasApp(boolean hasApp) {
-        put("hasApp", hasApp);
-    }*/
 
 }
