@@ -19,6 +19,8 @@
         android:textSize="20sp"
         android:layout_toEndOf="@+id/friendImageView"
         android:layout_toRightOf="@+id/friendImageView"
+        android:layout_toLeftOf="@+id/removeFriendImageView"
+        android:layout_toStartOf="@+id/removeFriendImageView"
         android:layout_marginLeft="5dp"/>
 
     <ImageView
