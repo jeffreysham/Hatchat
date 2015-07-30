@@ -1,22 +1,25 @@
 package com.flutter.hatchat.model;
 
-import com.parse.ParseObject;
-import com.parse.ParseClassName;
+import android.graphics.Bitmap;
+
 /**
  * Created by Jeffrey Sham on 5/22/2015.
  */
 public class Contact implements Comparable{
     private String phoneNumber;
     private String name;
+    private Bitmap photo;
 
     public Contact() {
         this.name = "";
         this.phoneNumber = "";
+        this.photo = null;
     }
 
     public Contact(String phoneNumber, String name) {
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.photo = null;
     }
 
     public String getPhoneNumber() {
@@ -33,6 +36,14 @@ public class Contact implements Comparable{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Bitmap getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Bitmap photo) {
+        this.photo = photo;
     }
 
     @Override

@@ -37,6 +37,7 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
         TextView contactNameText;
         TextView contactNumberText;
         ImageView itemClickedImageView;
+        ImageView photoImageView;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -50,7 +51,7 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
             holder.contactNameText = (TextView) convertView.findViewById(R.id.contactNameTextView);
             holder.contactNumberText = (TextView)convertView.findViewById(R.id.contactNumberTextView);
             holder.itemClickedImageView = (ImageView) convertView.findViewById(R.id.itemClickedImageView);
-
+            holder.photoImageView = (ImageView) convertView.findViewById(R.id.contactImageView);
             convertView.setTag(holder);
         } else {
             Log.i("run","convertView!=null");
@@ -67,6 +68,12 @@ public class ContactListViewAdapter extends ArrayAdapter<ContactRowItem>{
             } else {
                 //Did not select picture
                 holder.itemClickedImageView.setImageResource(0);
+            }
+
+            if (rowItem.getPhoto() == null) {
+                holder.photoImageView.setImageResource(R.drawable.default_user_photo);
+            } else {
+                holder.photoImageView.setImageBitmap(rowItem.getPhoto());
             }
         }
 

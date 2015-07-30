@@ -36,6 +36,7 @@ public class FriendListViewAdapter extends ArrayAdapter<Contact>{
     private class FriendViewHolder {
         TextView friendNameText;
         ImageView removeFriendImageView;
+        ImageView photoImageView;
     }
 
     public void updateLists(List<Contact> filteredList, List<Contact> originalList) {
@@ -53,7 +54,7 @@ public class FriendListViewAdapter extends ArrayAdapter<Contact>{
             holder = new FriendViewHolder();
             holder.friendNameText = (TextView) convertView.findViewById(R.id.friendNameTextView);
             holder.removeFriendImageView = (ImageView) convertView.findViewById(R.id.removeFriendImageView);
-
+            holder.photoImageView = (ImageView) convertView.findViewById(R.id.friendImageView);
             convertView.setTag(holder);
         } else {
             Log.i("run","convertView!=null");
@@ -62,6 +63,13 @@ public class FriendListViewAdapter extends ArrayAdapter<Contact>{
         if (rowItem != null) {
             holder.friendNameText.setText(rowItem.getName());
             holder.removeFriendImageView.setImageResource(R.drawable.hatchat_icon);
+
+            if (rowItem.getPhoto() == null) {
+                holder.photoImageView.setImageResource(R.drawable.default_user_photo);
+            } else {
+                holder.photoImageView.setImageBitmap(rowItem.getPhoto());
+            }
+
         }
 
         return convertView;

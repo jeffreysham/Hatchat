@@ -177,7 +177,7 @@ public class AddFriendsActivity extends ActionBarActivity {
         updateView(v, selected);
 
         Contact tempContact = new Contact(tempRowItem.getPhoneNumber(), tempRowItem.getName());
-
+        tempContact.setPhoto(tempRowItem.getPhoto());
         if (selected) {
             contactList.add(tempContact);
         } else {

@@ -2,10 +2,15 @@ package com.flutter.hatchat.activities;
 
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.provider.ContactsContract;
@@ -23,6 +28,10 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.parse.ParseAnalytics;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -182,13 +191,22 @@ public class SplashScreenActivity extends ActionBarActivity {
                         cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(
                         cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+
+                Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, cur.getLong(cur.getColumnIndex(ContactsContract.Contacts._ID)));
+                InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+
+                //Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, cur.getColumnIndex(ContactsContract.Contacts._ID));
+                //Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
                 if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
                     //Query phone here.  Covered next
                     Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
+
+                    //Cursor photoCur = cr.query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+
                     if (pCur.moveToNext()) {
                         // Do something with phones
                         String number = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        
+
                         String realPhoneNumber = "";
 
                         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
@@ -199,8 +217,42 @@ public class SplashScreenActivity extends ActionBarActivity {
                             e.printStackTrace();
                         }
 
+                        //byte[] data;
+                        InputStream inputStream = input;
+
+                        /*if (photoCur != null) {
+                            if (photoCur.moveToFirst()) {
+                                data = photoCur.getBlob(0);
+                                if (data != null) {
+                                    inputStream = new ByteArrayInputStream(data);
+                                }
+                            }
+                            photoCur.close();
+                        }*/
+
                         if (realPhoneNumber.length() > 0) {
                             ContactRowItem tempRowItem = new ContactRowItem(name, realPhoneNumber);
+
+                            if (inputStream != null) {
+
+                                try
+                                {
+                                    BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(bufferedInputStream);
+                                    inputStream.close();
+
+                                    bufferedInputStream.close();
+
+                                    tempRowItem.setPhoto(bitmap);
+                                    Log.i("photo", "Set photo");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            }
+                            Log.i("photo", "Did not set photo");
+
                             contactRowItemList.add(tempRowItem);
                         }
                     }

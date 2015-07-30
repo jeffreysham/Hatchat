@@ -1,5 +1,7 @@
 package com.flutter.hatchat.model;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Jeffrey Sham on 5/25/2015.
  */
@@ -7,11 +9,13 @@ public class ContactRowItem implements Comparable{
     private String phoneNumber;
     private String name;
     private boolean selected;
+    private Bitmap photo;
 
     public ContactRowItem (String name, String phoneNumber) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.selected = false;
+        this.photo = null;
     }
 
     public String getPhoneNumber() {
@@ -28,6 +32,14 @@ public class ContactRowItem implements Comparable{
 
     public boolean getSelected() {
         return selected;
+    }
+
+    public void setPhoto(Bitmap photo) {
+        this.photo = photo;
+    }
+
+    public Bitmap getPhoto() {
+        return this.photo;
     }
 
     @Override
