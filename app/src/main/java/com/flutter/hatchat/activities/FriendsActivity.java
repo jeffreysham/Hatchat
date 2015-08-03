@@ -77,9 +77,7 @@ public class FriendsActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("test", "in on Resume of Friends Activity");
-        Log.i("test", "friendsList = " + friendsList);
-        Log.i("test", "listViewAdapter = " + listViewAdapter);
+
         if (friendsList != null && listViewAdapter != null) {
             friendsList = databaseHandler.getAllContacts();
             if (friendsList.size() > 1) {
@@ -96,6 +94,12 @@ public class FriendsActivity extends ActionBarActivity {
         FriendsActivity.this.listViewAdapter.getFilter().filter("");
         Log.i("Stop", "In Friends: onStop()");
         unbindService(contactsServiceConnection);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseHandler.close();
     }
 
     @Override

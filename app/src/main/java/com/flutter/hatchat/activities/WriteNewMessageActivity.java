@@ -48,6 +48,8 @@ public class WriteNewMessageActivity extends ActionBarActivity {
 
         contactList = databaseHandler.getAllContacts();
 
+        databaseHandler.close();
+
         sendButton = (ImageButton) findViewById(R.id.sendButton);
         callButton = (ImageButton) findViewById(R.id.callButton);
         editText = (EditText)findViewById(R.id.editText);

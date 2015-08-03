@@ -93,6 +93,8 @@ public class SplashScreenActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
+        databaseHandler.close();
+
         if (contactCount != 0) {
             List<Contact> contactList = databaseHandler.getAllContacts();
             for (int i = 0; i < contactRowItemList.size(); i++) {

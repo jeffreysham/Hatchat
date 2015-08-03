@@ -213,6 +213,8 @@ public class AddFriendsActivity extends ActionBarActivity {
                 database.addContact(contact);
             }
 
+            database.close();
+
             Toast.makeText(this, "Saved Contacts", Toast.LENGTH_SHORT).show();
             contactsDataService.storeContactRowItems(contactRowItemList);
             goToHomeScreen();

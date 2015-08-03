@@ -45,6 +45,8 @@ public class WriteNewMessageFragment extends DialogFragment {
 
         contactList = databaseHandler.getAllContacts();
 
+        databaseHandler.close();
+
         sendButton = (ImageButton) rootView.findViewById(R.id.sendButton);
         callButton = (ImageButton) rootView.findViewById(R.id.callButton);
         editText = (EditText) rootView.findViewById(R.id.editText);

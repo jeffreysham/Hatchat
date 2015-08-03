@@ -68,6 +68,7 @@ public class AddNewFriendsActivity extends ActionBarActivity {
         super.onStop();
         AddNewFriendsActivity.this.listViewAdapter.getFilter().filter("");
         Log.i("Stop", "In AddNewFriends: onStop()");
+        databaseHandler.close();
         unbindService(contactsServiceConnection);
     }
 
