@@ -1,5 +1,6 @@
 package com.flutter.hatchat.activities;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -9,14 +10,14 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.flutter.hatchat.R;
 import com.flutter.hatchat.database.ContactsDataService;
@@ -29,14 +30,13 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import com.parse.ParseAnalytics;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SplashScreenActivity extends ActionBarActivity {
+public class SplashScreenActivity extends Activity {
 
     private ContactsDataService contactsDataService;
     private List<ContactRowItem> contactRowItemList;
@@ -82,6 +82,12 @@ public class SplashScreenActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
+        TextView textView = (TextView)findViewById(R.id.textView);
+
+        Typeface face= Typeface.createFromAsset(getAssets(), "font/angelina.TTF");
+
+        textView.setTypeface(face);
+        textView.setTextSize(32);
     }
 
     public void getDataFromDatabase() {
@@ -197,13 +203,9 @@ public class SplashScreenActivity extends ActionBarActivity {
                 Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, cur.getLong(cur.getColumnIndex(ContactsContract.Contacts._ID)));
                 InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
 
-                //Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, cur.getColumnIndex(ContactsContract.Contacts._ID));
-                //Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
                 if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
                     //Query phone here.  Covered next
                     Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
-
-                    //Cursor photoCur = cr.query(photoUri, new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
 
                     if (pCur.moveToNext()) {
                         // Do something with phones
@@ -219,18 +221,7 @@ public class SplashScreenActivity extends ActionBarActivity {
                             e.printStackTrace();
                         }
 
-                        //byte[] data;
                         InputStream inputStream = input;
-
-                        /*if (photoCur != null) {
-                            if (photoCur.moveToFirst()) {
-                                data = photoCur.getBlob(0);
-                                if (data != null) {
-                                    inputStream = new ByteArrayInputStream(data);
-                                }
-                            }
-                            photoCur.close();
-                        }*/
 
                         if (realPhoneNumber.length() > 0) {
                             ContactRowItem tempRowItem = new ContactRowItem(name, realPhoneNumber);

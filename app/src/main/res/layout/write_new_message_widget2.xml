@@ -7,7 +7,8 @@
         android:ems="10"
         android:hint="@string/hint"
         android:id="@+id/editText"
-        android:background="@drawable/abc_edit_text_material" />
+        android:background="@drawable/abc_edit_text_material"
+        android:backgroundTint="@color/sendMeduimGreenColor" />
 
     <ImageButton
         android:id="@+id/sendButton"

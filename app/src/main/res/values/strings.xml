@@ -4,7 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="write">New chat</string>
-    <string name="widget_label">Hatchat New Chat</string>
+    <string name="widget_label_small">Hatchat New Chat: Small</string>
+    <string name="widget_label_large">Hatchat New Chat: Large</string>
     <string name="chats">Your chats</string>
     <string name="friends">Contacts</string>
     <string name="send">Send</string>

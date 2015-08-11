@@ -12,7 +12,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/inputSearch"
             android:hint="@string/search_contacts"
-            android:inputType="textVisiblePassword"/>
+            android:inputType="textVisiblePassword"
+            android:backgroundTint="@color/sendMeduimGreenColor"/>
 
         <ListView android:id="@+id/friendsListView"
             android:layout_width="match_parent"

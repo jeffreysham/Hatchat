@@ -10,9 +10,13 @@
     <color name="sendMeduimColor">#5D6CA5</color>
     <color name="sendDarkColor">#515F9F</color>
 
-    <color name="sendLightGreenColor">#ff00ff75</color>
+    <!--<color name="sendLightGreenColor">#ff00ff75</color>
     <color name="sendMeduimGreenColor">#ff00e15d</color>
-    <color name="sendDarkGreenColor">#ff00a14b</color>
+    <color name="sendDarkGreenColor">#ff00a14b</color>-->
+
+    <color name="sendLightGreenColor">#76FF03</color>
+    <color name="sendMeduimGreenColor">#8BC34A</color>
+    <color name="sendDarkGreenColor">#558B2F</color>
 
     <color name="barDarkColor">#CECECE</color>
     <color name="barMeduimColor">#DFDEE0</color>
