@@ -88,7 +88,7 @@ public class WriteNewMessageActivity extends ActionBarActivity {
                 startActivity(intent);
 
                 ParseAnalytics.trackEventInBackground("callSent");
-
+                removeContact(theContact);
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(),
                         "Call failed, please try again later!",
@@ -114,6 +114,13 @@ public class WriteNewMessageActivity extends ActionBarActivity {
 
     }
 
+    private void removeContact(Contact theContact) {
+        databaseHandler = new DatabaseHandler(this);
+        databaseHandler.deleteContact(theContact);
+        contactList.remove(theContact);
+        databaseHandler.close();
+    }
+
     //Sends the message to the contact
     public void sendMessage() {
 
@@ -132,6 +139,7 @@ public class WriteNewMessageActivity extends ActionBarActivity {
                             Toast.LENGTH_SHORT).show();
 
                     ParseAnalytics.trackEventInBackground("messageSent");
+                    removeContact(theContact);
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(),
                             "SMS failed, please try again later!",

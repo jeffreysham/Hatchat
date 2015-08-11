@@ -87,7 +87,6 @@ public class SplashScreenActivity extends Activity {
         Typeface face= Typeface.createFromAsset(getAssets(), "font/angelina.TTF");
 
         textView.setTypeface(face);
-        textView.setTextSize(32);
     }
 
     public void getDataFromDatabase() {

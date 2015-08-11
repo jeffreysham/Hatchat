@@ -17,9 +17,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="hatchat"
         android:id="@+id/textView"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:layout_alignParentBottom="true"
+        android:textSize="40sp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"/>
+        android:layout_centerVertical="true"
+        android:textColor="@color/textColor"
+        android:textStyle="italic" />
 </RelativeLayout>

@@ -2,6 +2,7 @@ package com.flutter.hatchat.activities;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,6 +32,7 @@ public class WriteNewMessageFragment extends DialogFragment {
     private ImageButton sendButton;
     private ImageButton callButton;
     private DatabaseHandler databaseHandler;
+    private Context context;
 
     public static WriteNewMessageFragment newInstance() {
         return new WriteNewMessageFragment();
@@ -41,7 +43,9 @@ public class WriteNewMessageFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.write_message_screen, container, false);
 
-        databaseHandler = new DatabaseHandler(rootView.getContext());
+        context = rootView.getContext();
+
+        databaseHandler = new DatabaseHandler(context);
 
         contactList = databaseHandler.getAllContacts();
 
@@ -84,7 +88,7 @@ public class WriteNewMessageFragment extends DialogFragment {
                 startActivity(intent);
 
                 ParseAnalytics.trackEventInBackground("callSent");
-
+                removeContact(theContact);
             } catch (Exception e) {
                 Toast.makeText(getActivity().getApplicationContext(),
                         "Call failed, please try again later!",
@@ -111,6 +115,13 @@ public class WriteNewMessageFragment extends DialogFragment {
 
     }
 
+    private void removeContact(Contact theContact) {
+        databaseHandler = new DatabaseHandler(context);
+        databaseHandler.deleteContact(theContact);
+        contactList.remove(theContact);
+        databaseHandler.close();
+    }
+
     //Sends the message to the contact.
     public void sendMessage() {
 
@@ -129,6 +140,7 @@ public class WriteNewMessageFragment extends DialogFragment {
                             Toast.LENGTH_SHORT).show();
 
                     ParseAnalytics.trackEventInBackground("messageSent");
+                    removeContact(theContact);
                 } catch (Exception e) {
                     Toast.makeText(getActivity().getApplicationContext(),
                             "SMS failed, please try again later!",
