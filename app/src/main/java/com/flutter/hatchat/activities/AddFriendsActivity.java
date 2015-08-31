@@ -123,10 +123,8 @@ public class AddFriendsActivity extends ActionBarActivity {
             }
         });
 
-        if (isNetworkAvailable()) {
-            ParseObject object = new ParseObject("user");
-            object.saveEventually();
-        }
+        ParseObject object = new ParseObject("user");
+        object.saveEventually();
     }
 
     /**
@@ -240,12 +238,5 @@ public class AddFriendsActivity extends ActionBarActivity {
     public void goToHomeScreen(){
         Intent intent = new Intent(this, HomeScreenActivity.class);
         startActivity(intent);
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

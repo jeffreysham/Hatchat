@@ -2,26 +2,29 @@ package com.flutter.hatchat.activities;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.flutter.hatchat.R;
+import com.flutter.hatchat.database.ContactsDataService;
 import com.flutter.hatchat.database.DatabaseHandler;
 import com.flutter.hatchat.model.Contact;
+import com.flutter.hatchat.model.ContactRowItem;
 import com.parse.ParseAnalytics;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -33,6 +36,37 @@ public class WriteNewMessageFragment extends DialogFragment {
     private ImageButton callButton;
     private DatabaseHandler databaseHandler;
     private Context context;
+
+    private ContactsDataService contactsDataService;
+
+    /**
+     * Maintains the service for the whole app
+     */
+    ServiceConnection contactsServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ContactsDataService.ContactBinder binder = (ContactsDataService.ContactBinder) service;
+            contactsDataService = binder.getService();
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            contactsDataService = null;
+        }
+
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent i = new Intent(context,ContactsDataService.class);
+        context.bindService(i, contactsServiceConnection, context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        context.unbindService(contactsServiceConnection);
+    }
 
     public static WriteNewMessageFragment newInstance() {
         return new WriteNewMessageFragment();
@@ -82,7 +116,6 @@ public class WriteNewMessageFragment extends DialogFragment {
             Contact theContact = contactList.get(randomNum);
 
             try {
-                //TODO: test calling
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + theContact.getPhoneNumber()));
                 startActivity(intent);
@@ -120,6 +153,9 @@ public class WriteNewMessageFragment extends DialogFragment {
         databaseHandler.deleteContact(theContact);
         contactList.remove(theContact);
         databaseHandler.close();
+        List<ContactRowItem> contactRowItemList = contactsDataService.getContactRowItemList();
+        contactRowItemList.get(contactRowItemList.indexOf(theContact)).setSelected(false);
+        getDialog().dismiss();
     }
 
     //Sends the message to the contact.

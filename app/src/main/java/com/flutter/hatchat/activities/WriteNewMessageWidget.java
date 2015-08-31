@@ -1,7 +1,5 @@
 package com.flutter.hatchat.activities;
 
-import android.app.Activity;
-import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
