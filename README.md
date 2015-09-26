@@ -1,6 +1,6 @@
 # Hatchat
 
-This is a messaging application that the user writes a message and sends it to a random user.
+This is a messaging application that the user writes a message and sends it to a random contact on their phone.
 
 It uses Parse as a form of analytics (to track what the users do... only works if they have access to internet). 
 
